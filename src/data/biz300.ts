@@ -1,286 +1,286 @@
 import type { Phrase } from "../types";
 
 // パイプ区切りテキスト（1行1フレーズ）
-const RAW = `I'm going to be a little late.|少し遅れます。
-I'll go straight to one of our customers.|得意先に直行します。
-I'm not feeling well. I think I'll take the day off today.|体調が悪いので、今日お休みします。
-Oh, you are not feeling good? I'm sorry.|具合が良くないんだね。お大事に。
-I'll be ten minutes late.|10分遅れます。
-OK. Got it.|はい。わかりました。
-In the nick of time again?|またギリギリかい？
-I apologize.|申し訳ありません。
-Where is Mr. Yamashita?|山下さんはどこ？
-He hasn't got to the office yet.|まだ出社してません。
-Did you punch in?|タイムカード押したの？
-Oh, I forgot.|あ、忘れてた。
-Do you think you could do this?|これ、やっておいてもらえないか？
-No problem.|お安いごようです。
-Make sure you finish by the end of this week.|週末までに終わらせてくれ。
-I'll do my best.|ベストを尽くします。
-Have you taken the time to look over my proposal?|企画書に目を通していただけましたか？
-Oh,I see. I'll do it right now.|ああ、そうか。すぐに目を通すよ。
-Can we put this down as an expense?|これは経費で落とせますか？
-Sure. Get the receipt .|ああ。領収書をもらっておいて。
-Can you work late tonight?|今夜、残業してもらえるかな？
-Ah.That's not possible.|うーん、難しいですね。
-I'd like you to make a decision about this?|こちらの案件の判断をしていただけますか？
-Um..We'll have to pass this time.|うーん。今回は見送ろう。
+const RAW = `I'm afraid I'll be a little late.|申し訳ございませんが、少し遅れます。
+I'll go directly to a client's office.|得意先に直行いたします。
+I'm not feeling well, so I'd like to take the day off today.|体調が悪いので、本日はお休みをいただきたく存じます。
+Oh, you're not feeling well? I'm sorry to hear that.|お加減が良くないのですね。お大事にしてください。
+I'll be about ten minutes late.|10分ほど遅れます。
+Certainly. I understand.|承知いたしました。
+Cutting it close again, aren't you?|また間際になってしまいましたね。
+I do apologize.|申し訳ございません。
+Where is Mr. Yamashita?|山下さんはどちらにいらっしゃいますか。
+He hasn't arrived at the office yet.|まだ出社されていません。
+Did you clock in?|タイムカードは押されましたか。
+I'm afraid I forgot.|申し訳ございません、失念しておりました。
+Would you be able to take care of this?|こちらをお願いできますでしょうか。
+Of course, no problem at all.|もちろんでございます。
+Please make sure to finish this by the end of the week.|週末までに終わらせていただけますでしょうか。
+I'll do my very best.|全力を尽くします。
+Have you had a chance to review my proposal?|企画書に目を通していただけましたか？
+I see. I'll look at it right away.|わかりました。すぐに目を通させていただきます。
+Could we file this as an expense?|これは経費で落とせますか？
+Sure, please make sure to get a receipt.|承知しました。領収書を必ずもらってください。
+Would you be able to work late tonight?|今夜、残業していただけますでしょうか。
+I'm afraid that won't be possible.|申し訳ございませんが、難しいかと存じます。
+Could you make a decision about this?|こちらの案件の判断をしていただけますか？
+I'm afraid we'll have to pass this time.|今回は見送らせていただきます。
 Do you think I could take tomorrow off?|明日休みをもらってもいいですか？
-Yes. I know.|ああ。そのことは聞いてるよ。
-Give me a report on the results.|結果を報告してください。
-I got the okay from my client.|クライアントに了承してもらいました。
-I need a hand.|ちょっと手伝ってくれないか。
-Sure.|はい。
-Try not to make waves.|円満に解決してくれ。
-I'll take care of it right away.|すぐに対処します。
+Yes, I'm already aware of that.|はい、そちらについては存じております。
+Please give me a report on the results.|結果をご報告いただけますでしょうか。
+I got the okay from my client.|クライアントに了承していただきました。
+Could you give me a hand?|少々お手伝いいただけますでしょうか。
+Certainly.|承知いたしました。
+Please try to resolve this smoothly.|円満に解決していただけますでしょうか。
+I'll take care of it right away.|すぐに対処いたします。
 Could you help me with something?|ちょっと相談にのっていただけますか？
-I'll arrange my schedule.|都合をつけるよ。
-I'll leave it up to you.|君に任せるよ。
+I'll make arrangements in my schedule.|都合をつけさせていただきます。
+I'll leave it up to you.|お任せいたします。
 I'll be happy to.|よろこんでやらせていただきます。
-Settle this among yourselves.|内部ですすめてくれ。
-I'll get to it.|すぐにとりかかります。
-Ask the client about this.|先方に打診してくれ。
-Yeah, no problem.|ええ、まかせてください。
-How's the project going?|プロジェクトは順調？
-Everything's going well so far.|今のところ順調です。
-Would you mind coming with me?|ちょっと来てくれないか？
-I'll be right there.|はい、ただいま。
-It's my treat next time.|今度おごるよ。
-I should be the one thanking you.|お礼をいうのはこっちだよ。
-You've been very helpful.|ほんとに助かったよ。
+Could you settle this among yourselves?|内部で進めていただけますでしょうか。
+I'll get to it right away.|すぐにとりかからせていただきます。
+Could you check with the client about this?|先方に打診していただけますでしょうか。
+Of course, please leave it to me.|もちろんです、お任せください。
+How is the project progressing?|プロジェクトは順調に進んでいますか。
+Everything's going well so far.|今のところ順調でございます。
+Would you mind coming with me for a moment?|少々ご一緒いただけますでしょうか。
+I'll be right there.|はい、ただいまうかがいます。
+It's my treat next time.|次回は私がご馳走いたします。
+I should be the one thanking you.|お礼を申し上げるのはこちらの方です。
+You've been such a great help.|本当に助かりました。
 You're welcome.|どういたしまして。
-I owe you one.|借りができたな。
-Anytime.|いつでも言ってね。
-I take my hat off to you.|君には足を向けて寝れなくなったな。
+I owe you one.|恩に着ます。
+Anytime, please feel free to ask.|いつでもおっしゃってください。
+I take my hat off to you.|本当に頭が下がります。
 It was nothing at all.|礼には及びません。
-I'm grateful to you.|感謝してるよ。
-I'm grad I could help.|お役にたてて良かった。
+I'm truly grateful to you.|感謝しております。
+I'm glad I could help.|お役にたてて良かったです。
 You've done a lot for me.|本当にお世話になりました。
 Don't mention it.|礼にはおよびません。
-I'm terribly sorry.|申し訳ありません。
-Don't mention it.|もういいですよ。
-It's my mistake.|私のミスです。
-It's no big deal.|たいしたことじゃないよ。
-It's my responsibility.|私の責任です。
-Forget it.|気にするな。
+I'm terribly sorry.|申し訳ございません。
+Please don't worry about it.|どうかお気になさらないでください。
+It's my mistake.|私の誤りでございます。
+It's nothing serious.|大したことではございません。
+It's my responsibility.|私の責任でございます。
+Please don't worry about it.|どうぞお気になさらないでください。
 I'll take the blame.|私が責任をとります。
-Don't sweat it.|大丈夫だよ。
-Sorry for being a pain.|わずらわせてしまってすみません。
-This happens all the time.|よくあることさ。
-I must have lost my mind.|どうかしてました。
-Don't worry about it.|くよくよするな。
-I don't know what I was thinking.|うっかりしてました。
-There's always a next time.|次があるよ。
-You did a great job.|よくやってくれた。
-You're amazing.|さすがだね。
-That's an interesting idea.|面白いアイディアだね。
-Not bad.|なかなかいい考えだ。
-I'm counting on you.|頼りにしてるよ。
-That's really something.|たいしたものだな。
-Keep up the good work.|この調子で頑張って。
-I know I can count on you.|期待しているよ。
-You must be tired.|疲れたでしょう。
-You did a good job today.|今日も良くやってくれたね。
-You can do it!|やればできるじゃない！
-I knew you could do it.|君ならやってくれると思ってたよ。
-Thank you for compliment.|恐れ入ります。
-I'm sorry so bothering you.|手間をかけてすまなかったね。
-Don't mention it.|いいですよ。
-How do you like your job?|仕事にはなれたかな？
+Please don't worry.|ご心配なさらないでください。
+I'm sorry for the trouble.|ご面倒をおかけして申し訳ございません。
+This happens quite often.|こうしたことはよくございます。
+I must not have been thinking clearly.|判断を誤っておりました。
+Please don't worry about it.|あまり気を落とさないでください。
+I'm not sure what I was thinking.|うっかりしておりました。
+There's always next time.|次の機会がございます。
+You did a great job.|よくやっていただきました。
+You're truly amazing.|さすがでございますね。
+That's a very interesting idea.|面白いアイデアですね。
+That's quite a good idea.|なかなか良いお考えですね。
+I'm counting on you.|頼りにしております。
+That's truly impressive.|それは見事ですね。
+Please keep up the good work.|この調子で頑張ってください。
+I know I can count on you.|期待しております。
+You must be tired.|お疲れになったでしょう。
+You did a great job again today.|今日もよくやっていただきました。
+I knew you could do it!|やればできるではないですか！
+I knew you could do it.|あなたならやってくださると思っていました。
+Thank you for the compliment.|恐れ入ります。
+I'm sorry for the trouble.|お手数をおかけして申し訳ございませんでした。
+Not at all.|いえ、構いません。
+Are you getting used to the job?|お仕事には慣れましたか。
 I'm getting used to the work lately.|最近はだいぶ慣れてきました。
-Are you going to make it?|やっていけそうかね？
+Do you think you'll be able to manage?|やっていけそうでしょうか。
 I think I'm getting on well with them.|みんなとうまくやっていけると思います。
 Hello, Sakura English corporation. Ken Sato speaking.|はい、サクライングリッシュの佐藤ケンでございます。
 Thank you for calling.|お電話ありがとうございます。
 How may I help you?|どのようなご用件でしょうか？
-This is Sato of CCB.|CCB社の佐藤といいます。
-May I talk to Mr. Brown?|Mr.ブラウンと話せますか？
-Let me transfer you to Mr. Brown in charge.|Mr. ブラウンにかわります。
+This is Sato from CCB.|CCB社の佐藤と申します。
+May I speak with Mr. Brown?|ブラウン様とお話しできますでしょうか。
+Let me transfer you to Mr. Brown, who is in charge.|担当のブラウンにおつなぎいたします。
 Could you hold for just a moment?|しばらくお待ちください。
-Hello,this is John Brown speaking.|ジョンブラウンです。
-Thank you for waiting.|お待たせしました。
+Hello, this is John Brown speaking.|ジョン・ブラウンでございます。
+Thank you for waiting.|お待たせいたしました。
 How have you been?|おかわりないですか？
-Sorry for interrupting you.|お忙しいところをすみません。
-How have you been?|最近はどうですか？
-Everything's the same as always here.|こちらは相変わらずです。
-I'm sorry, can I have your name again?|申し訳ありませんが、もう一度お名前をお願いできますか？
-This is Sato of CCB.S, A, T, O, Sato.|CCB社の佐藤といいます。さ・とーです。
-Just a second.|ちょっとお待ちください。
-I'm afraid he's not in right now.|ただいま外出しています。
+Sorry for interrupting you.|お忙しいところ恐れ入ります。
+How have things been lately?|最近はいかがですか。
+Everything's the same as always here.|こちらは相変わらずでございます。
+I'm sorry, could you tell me your name again?|申し訳ございませんが、もう一度お名前を伺えますでしょうか。
+This is Sato from CCB. S-A-T-O, Sato.|CCB社の佐藤と申します。さ・とう、と申します。
+Just a moment, please.|ちょっとお待ちください。
+I'm afraid he's not in right now.|ただいま外出しております。
 About what time is he expected back?|何時ごろお戻りになりますか？
 We expect him back at 3:30.|3時半には戻る予定です。
-Could I ask you to take a message?|メッセージを伝えていただけますか？
+May I ask you to leave a message?|ご伝言を承りましょうか。
 Could you have him call me when he gets back?|戻ったらお電話をいただけないでしょうか。
-Okay, I'll call back later.|また、かけなおします。
-May I have his mobile number?|携帯の番号を教えてもらえますか？
-I'll be sure to let him know.|伝えておきます。
+Certainly, I'll call back later.|承知いたしました。改めてお電話いたします。
+May I have his mobile number?|携帯のお電話番号を教えていただけますでしょうか。
+I'll be sure to let him know.|お伝えしておきます。
 Thank you.|ありがとうございます。
-Please give my regards to Mr Brown.|ブラウンさんによろしくお伝えください。
+Please give my regards to Mr. Brown.|ブラウンさんによろしくお伝えください。
 We'll talk to you later.|ではまた後ほど。
-Well, okay... I have to go now.|申し訳ありませんが、そろそろ切らなくては。
-Sorry, but the reception isn't very good here.|すみません、電波が弱いようなのですが。
+Well, I'm afraid I have to go now.|申し訳ありませんが、そろそろ切らなくては。
+I'm sorry, but the reception isn't very good here.|申し訳ございません、電波が弱いようでございます。
 Could you hold on a second?|そのまま少しまっていただけますか？
-My mistake. I misdialed.|失礼、間違えました。
-I’d like to thank everyone for coming today.|本日は集まっていただきありがとうございます。
-Let’s get started.|それでは始めましょう。
+I apologize, I dialed the wrong number.|失礼いたしました。番号を間違えました。
+I'd like to thank everyone for coming today.|本日は集まっていただきありがとうございます。
+Let's get started.|それでは始めましょう。
 Shall we start, everyone?|皆さん、始めましょうか？
-Let’s begin.|始めましょう。
-Let’s get started with today’s agenda.|今日の議題に入りましょう。
-Are you ready to start the meeting?|準備はいいですか？
-Today’s agenda has two items.|今日の議題は二つあります。
+Let's begin.|始めましょう。
+Let's move on to today's agenda.|本日の議題に入りましょう。
+Are we ready to begin the meeting?|会議を始める準備はよろしいでしょうか。
+There are two items on today's agenda.|本日の議題は二つございます。
 The purpose of this meeting is to determine which course of action we should take.|この会議の目的は今後の活動方針を決めることです。
-We'd like to talk about business development in 2021.|2021年の事業について話したいと思います。
-I will be taking the minutes today.|私が今日は議事録をとります。
-Please allow me to clarify one thing.|明確にしておきたいことが一つあります。
+We would like to discuss business development for 2021.|2021年の事業展開についてお話しさせていただきたく存じます。
+I will be taking the minutes today.|本日は私が議事録を担当させていただきます。
+Please allow me to clarify one thing.|明確にしておきたいことが一つございます。
 Please look at this bar graph.|こちらの棒グラフをご覧ください。
-Is everyone able to see the slides from where you are positioned?|皆さん、そちらからスライドが見えますか？
+Is everyone able to see the slides from where you are positioned?|皆様、そちらからスライドはご覧いただけますでしょうか。
 If not, please let me know.|もし見えない時はお知らせください。
-Let me give you some examples.|いくつか例をあげてみましょう。
-I can summarize it like this.|簡単に言えばこういう感じです。
-There are three reasons for this.|これには理由が三つあります。
+Let me give you a few examples.|いくつか例を挙げさせていただきます。
+To summarize, it's something like this.|簡潔に申し上げますと、このようになります。
+There are three reasons for this.|これには三つの理由がございます。
 Raise your hand if you approve.|賛成の方は挙手してください。
-Does anyone have some questions?|どなたか質問がある人はいますか？
+Does anyone have any questions?|どなたかご質問はございますか。
 Can we move on to the next item?|次の議題にうつってもいいですか？
-That's a interesting question.|いい質問ですね。
-I have a suggestion.|提案があります。
-Here's an idea.|これが私のアイディアです。
+That's a very good question.|良いご質問ですね。
+I have a suggestion.|提案がございます。
+Here's an idea.|こちらが私の案でございます。
 I've got an idea.|いいアイディアを思いつきました。
-I have an objection.|異議あり
-Let's vote on it.|多数決で決めよう。
-I don't want to waste this chance.|このチャンスを無駄にしたくない。
-Who is responsible for this?|これは誰の責任なんだ？
+I have an objection.|異議がございます。
+Let's decide by a vote.|多数決で決めましょう。
+I don't want to waste this opportunity.|この機会を無駄にしたくありません。
+Who is responsible for this?|これはどなたの責任でしょうか。
 I think it'll work.|うまく行くと思います。
 I totally agree with you.|全面的にあなたに賛成です。
-I wish I'd thought of that.|それはいい考えです。
+I wish I had thought of that.|それは良いお考えですね。
 I'm 100% with you on this one.|100%賛成です。
 I'm not convinced.|納得できません。
 I appreciate that, but I can't agree.|理解はできますが、賛成はしかねます。
 Let's not do it.|やめておきましょう。
-This is all I have to say.|これだけは言っておきます。
+This is all I have to say.|これだけは申し上げておきます。
 I'm afraid that I disagree with you.|残念ですが、反対です。
 I don't have any problem with that.|異議はありません。
-I don’t have anything else to add.|とくに付け加えることはありません。
-I don't think it's going to fly.|それが受け入れらるとは思えません。
-I like it, but I'm not sure if the boss will.|私は好きだけど、ボスが気にいるかどうかはわかりません。
-That's what I thought.|これが私が思ったことです。
+I don't have anything else to add.|とくに付け加えることはありません。
+I don't think it's going to fly.|それが受け入れられるとは思えません。
+I like it, but I'm not sure if our manager will.|私は良いと思いますが、上司が気に入るかは分かりません。
+That's exactly what I thought.|それが私の考えでございます。
 To make a long story short,|要するに、
-In a nutshell,|かいつまんで言うと、
-What I'm trying to say is,|何が言いたいかと言うと、
+In short,|簡潔に申し上げますと、
+What I'm trying to say is,|申し上げたいことは、
 You may have a point there.|なるほど、一理ありますね。
-Forgive me, but I have to go.|申し訳ありませんが、失礼させていただきます。
+Forgive me, but I have to go.|申し訳ございませんが、失礼させていただきます。
 I'd like to sum up our discussion today.|今日の話し合いをまとめたいと思います。
-Let’s wrap up the meeting.|会議はお開きにしましょう。
-Just food for thought.|ジャストアイデアですが、
+Let's wrap up the meeting.|会議はお開きにしましょう。
+Just food for thought,|一つの案にすぎませんが、
 The point is,|要点は、
-I guess we’ll finish here.|ここで終わりにしましょう。
+I guess we'll finish here.|ここで終わりにしましょう。
 Thank you for your time.|貴重なお時間をありがとうございました。
 We had a productive meeting today.|大変有意義な会議となりました。
 May I help you?|いらっしゃいませ。
 How can I help you?|どのようなご用件でしょうか。
-May I ask your purpose of your visit?|どのようなご用件でしょうか。
+May I ask the purpose of your visit?|どのようなご用件でしょうか。
 I have an appointment at 3pm. Is Mr. Brown available?|3時に約束をしております。ブラウンさんはいらっしゃいますか。
 May I ask your name?|お名前を伺ってもよろしいでしょうか。
-Could I have your name,please?|お名前を伺ってもよろしいでしょうか。
-I'm Ken Sato. I have an appointment at 3p.m.|サトウケンと言います。3時に約束をしております。
+Could I have your name, please?|お名前を伺ってもよろしいでしょうか。
+I'm Ken Sato. I have an appointment at 3 p.m.|佐藤ケンと申します。3時にお約束をいただいております。
 Have you made an appointment?|お約束はしていますか？
-Actually, no. but I'd just like to say hi to Mr Brown.|いえ、してないのですがちょっとブラウンさんにご挨拶をしたくて。
-I have an appointment at 3p.m.Is Mr Brown available?|3時に約束をしております。ブラウンさんはいらっしゃいますか。
+Actually, no, but I would just like to greet Mr. Brown.|いえ、しておりませんが、ブラウン様にご挨拶をしたく存じます。
+I have an appointment at 3 p.m. Is Mr. Brown available?|3時に約束をしております。ブラウンさんはいらっしゃいますか。
 We've been expecting you.|お待ちしておりました。
 Thank you for coming today.|本日はお越しいただきありがとうございます。
 I'll have him come right away.|すぐに呼んで参ります。
 He's on the way.|こちらに向かっております。
 Please have a seat while you wait.|おかけになってお待ちください。
-I'm sorry to keep you waiting.|お待たせして申し訳ありません。
-Thank you for waiting.|お待たせして申し訳ありません。
-Mr.Sato will be with you soon.|すぐに佐藤がまいります。
+I'm sorry to keep you waiting.|お待たせして申し訳ございません。
+Thank you for waiting.|お待たせいたしました。
+Mr. Sato will be with you soon.|すぐに佐藤がまいります。
 Please come this way.|こちらへどうぞ。
 Could you please wait here?|こちらでお待ちいただけますか。
-Please make yourself comfortable.|楽にしてください。
+Please make yourself comfortable.|どうぞお楽になさってください。
 I'll see you off here.|では、ここで失礼します。
 Thank you for everything today.|本日はありがとうございました。
-Please give my regards to everyone.|皆さんによろしくお伝え下さい。
+Please give my regards to everyone.|皆様によろしくお伝えください。
 It's a pleasure to meet you.|お会いできて光栄です。
-I've been looking forward to meeting you.|お会いできるのを楽しみにしてました。
+I've been looking forward to meeting you.|お会いできるのを楽しみにしておりました。
 I'm glad to see you're doing well.|お元気そうで何よりです。
 You seem busy as usual.|相変わらず忙しそうですね。
-You seem as busy as ever.|相変わらず忙しそうですね。
-How is your family.|ご家族はいかがですか？
-This is quite a nice office.|なかなかいいオフィスですね。
+You always seem so busy.|いつもお忙しそうですね。
+How is your family?|ご家族はいかがですか？
+This is quite a nice office.|なかなか素敵なオフィスですね。
 Let me begin, please.|始めさせてください。
 Well, let's get down to business.|それでは本題に入らせていただきます。
 Please look at this document.|こちらの資料をご覧ください。
-Please read through this.|こちらを読んでください。
-Please let me explain.|説明させてください。
+Could you please read through this?|こちらをお読みいただけますでしょうか。
+Please let me explain.|ご説明させてください。
 Would it be possible to get an estimate?|見積もりを出していただけますか？
 What about $1000?|1000ドルでいかがでしょうか。
-Can you go just a lower?|もう少し安くなりませんか？
+Could you possibly go a bit lower?|もう少しお安くなりませんでしょうか。
 You're right about that.|ごもっともです。
 I see what you mean.|おっしゃることはごもっともです。
-I understand your position.|あなたの立場は理解できます。
-I'll think about it.|検討します。
+I understand your position.|そちらのお立場はよく理解できます。
+I'll think about it.|検討させていただきます。
 I can't make the decision by myself.|私の一存では決定できません。
-I'll have to talk with superiors.|上司と相談します。
+I'll have to talk with my superiors.|上司に相談いたします。
 I'll see you again.|またお会いしましょう。
-Thank you for your valuable time.|貴重なお時間をありがとうございました。
-Could you drop this in the mailbox?|これをポストに投函してもらえない？
-No problem.|お安いごようです。
-Could you send fax this?|これをFaxしてくれないか？
-Okay.|わかりました。
-I'm in a big hurry.Send it bike express.|大急ぎなんだ。バイク便で送ってくれないか。
-Yeah, no problem.|ええ、まかせといてください。
-I left my ID card at the office.|IDカードを会社に忘れた。
-Can anyone answer the phone?|誰か電話出てくれる？
-I put him or her on hold.|保留にして彼（彼女）に待ってもらってます。
-Can I give him a message?|伝言を伝えましょうか？
-I turn in the documents.|書類を提出する。
-Could you make some copies.|コピーをとってもらえますか。
-He cleared the paper jam.|彼が紙詰まりを直してくれた。
-I'll make a deposit.|仮払いをしよう。
-I'll take a lunch break.|昼休みをとろう。
-He left his desk.|彼は席を外した。
-I'll go out for lunch with my coworkers.|同僚とランチに行こう。
-The work hasn't progressed very far.|仕事があまりはかどらない。
-I have mountains of work.|仕事が山のようにある。
-She works at a slow pace.|彼女はだらだら仕事をする。
-I goof off.|仕事をサボる。
-I made an appointment with my client.|クライアントのアポをとった。
-We exchanged business cards.|名刺交換をした。
-I get a contract.|契約をとる。
-I have to apologize to the client.|クライアントに謝罪しなくてはいけない。
-I put the meals down as company expenses.|飲食代を経費で落とした。
-I worked overtime for two hours.|2時間残業をした。
-I worked unpaid overtime.|サービス残業をした。
-I'm under stress.|ストレスが溜まっている。
-My job is challenging.|仕事にやりがいがある。
-I juggle work and family.|仕事と家庭を両立させている。
-I bring my work home.|家に仕事を持ち帰る。
-I leave work early.|仕事を早退する。
-My salary is 200,000 yen after taxes.|給料は手取り20万円だ。
-My salary is low.|給料が安い。
-My salary dropped.|給料が下がった。
+Thank you for your valuable time.|貴重なお時間を頂きありがとうございました。
+Could you drop this in the mailbox?|これをポストに投函していただけますでしょうか。
+Of course, no problem at all.|もちろんでございます。
+Could you fax this for me?|こちらをFaxしていただけますでしょうか。
+Certainly.|承知いたしました。
+I'm in a big hurry. Could you send it by courier?|急いでおりますので、バイク便で送っていただけますでしょうか。
+Of course, please leave it to me.|もちろんです。お任せください。
+I left my ID card at the office.|IDカードを会社に忘れてしまいました。
+Could someone answer the phone?|どなたか電話に出ていただけますか。
+I've put them on hold.|保留にしてお待ちいただいております。
+Shall I take a message for him?|ご伝言を承りましょうか。
+I submit the documents.|書類を提出いたします。
+Could you make some copies?|コピーを取っていただけますでしょうか。
+He cleared the paper jam for me.|彼が紙詰まりを直してくれました。
+I'll make an advance payment.|仮払いをいたします。
+I'll take my lunch break.|昼休みを取らせていただきます。
+He has stepped away from his desk.|彼は席を外しております。
+I'll go out for lunch with my colleagues.|同僚とランチに行ってまいります。
+The work hasn't progressed very much.|仕事があまり進んでおりません。
+I have a mountain of work.|仕事が山積みでございます。
+She works at a relaxed pace.|彼女はゆっくりと仕事を進めております。
+I sometimes slack off at work.|仕事を怠ってしまうことがございます。
+I made an appointment with my client.|クライアントとのお約束を取りました。
+We exchanged business cards.|名刺交換をいたしました。
+I secure a contract.|契約を取らせていただきます。
+I have to apologize to the client.|クライアントにお詫びしなければなりません。
+I filed the meal as a company expense.|飲食代を経費として処理いたしました。
+I worked two hours of overtime.|2時間残業をいたしました。
+I worked unpaid overtime.|サービス残業をいたしました。
+I'm feeling quite stressed.|ストレスが溜まっております。
+My job is very rewarding.|仕事にやりがいを感じております。
+I balance work and family.|仕事と家庭を両立させております。
+I bring my work home.|仕事を家に持ち帰ることがございます。
+I sometimes leave work early.|早退させていただくことがございます。
+My take-home pay is 200,000 yen.|給料は手取りで20万円でございます。
+My salary is rather low.|給料が低めでございます。
+My salary was reduced.|給料が下がりました。
 I'll attend a meeting.|会議に出席します。
-I'll go to work on my day off.|休日出勤します。
-I have a five-day work week.|週休二日制だ。
-I have 30 paid leaves a year.|年に30日の有給休暇がある。
-I take a day off.|一日休みをとる。
-I get along well with my boss.|上司とうまくやってます。
-My company has a free atmosphere.|うちは自由な雰囲気の会社だ。
-I resigned before retirement age.|早期退職をした。
-You're fired.|君はくびだ。
-I think I write up a resume.|履歴書を書こう。
-I have a job interview this Friday.|金曜日に採用面接を受けるんだ。
+I'll go to work on my day off.|休日出勤いたします。
+We have a five-day work week.|週休二日制となっております。
+I have 30 days of paid leave a year.|年に30日の有給休暇がございます。
+I'll take a day off.|一日お休みをいただきます。
+I get along well with my manager.|上司とは良好な関係を築いております。
+Our company has a relaxed atmosphere.|弊社は自由な雰囲気の会社でございます。
+I took early retirement.|早期退職をいたしました。
+I'm afraid we have to let you go.|大変申し上げにくいのですが、退職していただくことになりました。
+I think I'll write up my resume.|履歴書を作成しようと思います。
+I have a job interview this Friday.|金曜日に採用面接を受ける予定でございます。
 Tell me a bit about yourself.|あなたのことを簡単に教えていただけますか？
-I have been working as sales at an apparel company for 2 years.|アパレルの営業として二年間働いてます。
+I have been working in sales at an apparel company for two years.|アパレル会社の営業として2年間働いております。
 Do you mind if I ask why you quit your old job?|前の仕事をやめた理由を聞いても構いませんか？
 I'm starting to feel like I'd like to work for a bigger company.|より大きな規模の会社で働いてみたいと思ったからです。
 What are your strengths?|あなたの長所は何ですか？
 I'm a quick learner.|物覚えが早いところです。
 What are your weaknesses?|あなたの短所はなんですか？
-My defect is to be a perfectionist.|完璧主義なところです。
-Tell me why you want to work here.|どうしてここで働きたいのか、理由を教えてください。。
-I’m interested in this position for a couple of reasons.|はい、理由はいくつかあります。
+My weakness is that I tend to be a perfectionist.|完璧主義であるところでございます。
+Please tell me why you want to work here.|どうしてここで働きたいのか、理由を教えてください。
+I'm interested in this position for a couple of reasons.|理由はいくつかございます。
 When can you start working with us?|いつから働けますか？
-Well…I’d love to start working here immediately.|すぐにでも働き始めたいと思います。
+Well, I'd love to start working here immediately.|すぐにでも働き始めたいと思います。
 time clock|タイムリコーダー
 external line|外線
 extension line|内線
