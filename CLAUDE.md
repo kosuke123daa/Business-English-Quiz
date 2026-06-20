@@ -48,7 +48,9 @@ SetsScreen        フレーズ集選択（進捗バー付き）
 - ✏️英文・日本語訳のインライン編集
 - 📖文法解説（Anthropic API、解説はKVにキャッシュ）
   - 失敗時：3秒後自動リトライ → 失敗なら手動リトライボタン
-- 📤/📥JSONエクスポート・インポート
+  - 🔄再生成ボタン（forceフラグでキャッシュを無視して再取得）
+- 📥CSVアップロードによるフレーズ集の追加（連番・英語・日本語の3列、ファイル名がセット名になる）
+- フレーズ集の名前変更・削除（CSVで追加したセットのみ。ビルトインのbiz300は対象外）
 - グループ別進捗表示（✅/❌/残り・ミニ進捗バー）
 - ❌不正解まとめモード（セット内全不正解を横断出題）
 
@@ -60,6 +62,8 @@ SetsScreen        フレーズ集選択（進捗バー付き）
 | `beq:cja:{setId}` | `Record<number, string>` | カスタム日本語訳 |
 | `beq:cen:{setId}` | `Record<number, string>` | カスタム英文 |
 | `beq:gc:{phraseId}` | `string` | 文法解説キャッシュ（フレーズ単位） |
+| `beq:sets:index` | `string[]` | CSVで追加したカスタムフレーズ集のID一覧 |
+| `beq:sets:{setId}` | `PhraseSet` | カスタムフレーズ集本体（name/color/data） |
 
 v1 はシングルユーザー想定。マルチユーザー化するときはキーに `:{userId}` を追加。
 
@@ -70,18 +74,22 @@ beq/
 ├── api/
 │   ├── marks.ts      # GET/POST 正解記録（KV）
 │   ├── custom.ts     # GET/POST カスタム翻訳（KV）
-│   └── grammar.ts    # GET/POST 文法解説（KV + Anthropic プロキシ）
+│   ├── grammar.ts    # GET/POST 文法解説（KV + Anthropic プロキシ）
+│   └── sets.ts       # GET/POST/PATCH/DELETE カスタムフレーズ集（KV）
 ├── src/
 │   ├── types/
 │   │   └── index.ts  # 共通型定義
 │   ├── data/
 │   │   └── biz300.ts # フレーズデータ（RAW文字列 + parseRaw）
 │   ├── utils/
-│   │   └── shuffle.ts
+│   │   ├── shuffle.ts
+│   │   ├── csv.ts         # CSV→Phrase[] パース
+│   │   └── customSets.ts  # カスタムセットのID生成・色割り当て
 │   ├── hooks/
-│   │   ├── useMarks.ts    # 正解記録の取得・更新
-│   │   ├── useCustom.ts   # カスタム翻訳の取得・更新
-│   │   └── useGrammar.ts  # 文法解説の取得
+│   │   ├── useMarks.ts       # 正解記録の取得・更新
+│   │   ├── useCustom.ts      # カスタム翻訳の取得・更新
+│   │   ├── useGrammar.ts     # 文法解説の取得
+│   │   └── useCustomSets.ts  # カスタムフレーズ集の取得・追加・改名・削除
 │   ├── components/
 │   │   ├── SetsScreen.tsx
 │   │   ├── GroupsScreen.tsx
@@ -132,10 +140,11 @@ Vercel ダッシュボードの Environment Variables にも同じ値を設定�
 - 文法解説はオンデマンド取得（「文法解説を見る」ボタン押下時）
 - 取得済み文法解説はローカル state にキャッシュ（ページリロードで再取得）
 
-## JSONインポート時の処理
+## CSVアップロード時の処理
 
-- en / ja がオリジナルと同値なら cen / cja に保存しない（無駄なカスタムを防ぐ）
-- grammar は /api/grammar POST ではなく直接 KV に書き込む（インポート用エンドポイントを別途用意するか、クライアントから grammar API に PUT で送る）
+- 形式は「連番,英語フレーズ,日本語フレーズ」の3列（1行目がヘッダーの場合は自動で読み飛ばす）
+- ファイル名（拡張子を除く）をそのままフレーズ集名にする
+- 追加したフレーズ集は `/api/sets` 経由でKVに永続化（ブラウザ・端末を変えても消えない）
 
 ## 元の Artifact 版からの主な変更点
 

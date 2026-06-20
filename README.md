@@ -12,7 +12,8 @@
 - 🔊TTS（カスタム英文があればそちらを読み上げ、Web Speech API使用）
 - ✏️英文・日本語訳のインライン編集
 - 📖文法解説（Anthropic API、解説はKVにキャッシュ）
-- 📤/📥 JSONエクスポート・インポート
+- 📥CSVアップロードによるフレーズ集の追加（連番・英語・日本語の3列）
+- フレーズ集の名前変更・削除（CSVで追加したもののみ）
 - グループ別進捗表示（✅/❌/残り・ミニ進捗バー）
 - ❌不正解まとめモード（セット内全不正解を横断出題）
 
@@ -52,7 +53,8 @@ beq/
 ├── api/                  # Vercel Edge Functions（KV連携）
 │   ├── marks.ts          # 正解記録
 │   ├── custom.ts         # カスタム英文・日本語訳
-│   └── grammar.ts        # 文法解説（Anthropic API + KVキャッシュ）
+│   ├── grammar.ts        # 文法解説（Anthropic API + KVキャッシュ）
+│   └── sets.ts           # CSVで追加したフレーズ集（KV永続化）
 ├── src/
 │   ├── types/            # 共通型定義
 │   ├── data/biz300.ts    # フレーズデータ（300問）
