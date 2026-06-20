@@ -1,0 +1,40 @@
+export type Mark = "o" | "x";
+export type Lang = "ja" | "en";
+export type QuizMode = "group" | "wrong";
+export type Screen = "sets" | "groups" | "quiz";
+
+export interface Phrase {
+  id: number;
+  en: string;
+  ja: string;
+}
+
+export interface PhraseSet {
+  id: string;
+  name: string;
+  color: string;
+  data: Phrase[];
+}
+
+export interface MarksMap {
+  [phraseId: number]: Mark;
+}
+
+export interface CustomMap {
+  [phraseId: number]: string;
+}
+
+export interface GrammarMap {
+  [phraseId: number]: string;
+}
+
+// JSON エクスポート形式
+export interface ExportRecord {
+  setId: string;
+  groupNo: number;
+  phraseId: number;
+  en: string;
+  ja: string;
+  mark: Mark | null;
+  grammar: string | null;
+}
