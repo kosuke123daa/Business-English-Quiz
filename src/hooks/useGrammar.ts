@@ -6,14 +6,14 @@ export function useGrammar() {
   const [loadingId, setLoadingId] = useState<number | null>(null);
 
   const fetchGrammar = useCallback(
-    async (phraseId: number, enText: string) => {
-      if (grammar[phraseId]) return grammar[phraseId];
+    async (phraseId: number, enText: string, force = false) => {
+      if (!force && grammar[phraseId]) return grammar[phraseId];
       setLoadingId(phraseId);
       try {
         const res = await fetch("/api/grammar", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phraseId, enText }),
+          body: JSON.stringify({ phraseId, enText, force }),
         });
         const data = await res.json();
         setGrammar((prev) => ({ ...prev, [phraseId]: data.grammar }));

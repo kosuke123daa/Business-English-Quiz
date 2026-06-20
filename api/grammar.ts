@@ -15,12 +15,14 @@ export default async function handler(req: Request): Promise<Response> {
     return Response.json({ grammar: cached ?? null });
   }
 
-  // POST: 未キャッシュなら Anthropic API 呼び出し
+  // POST: 未キャッシュなら Anthropic API 呼び出し（force指定時はキャッシュを無視して再生成）
   if (req.method === "POST") {
-    const { phraseId, enText } = await req.json();
+    const { phraseId, enText, force } = await req.json();
     const cacheKey = `${KV_PRE}:gc:${phraseId}`;
-    const cached = await kv.get<string>(cacheKey);
-    if (cached) return Response.json({ grammar: cached });
+    if (!force) {
+      const cached = await kv.get<string>(cacheKey);
+      if (cached) return Response.json({ grammar: cached });
+    }
 
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",

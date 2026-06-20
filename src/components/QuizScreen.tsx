@@ -14,7 +14,7 @@ interface QuizScreenProps {
   setCja: (phraseId: number, value: string | null) => void;
   cen: CustomMap;
   setCen: (phraseId: number, value: string | null) => void;
-  fetchGrammar: (phraseId: number, enText: string) => Promise<string>;
+  fetchGrammar: (phraseId: number, enText: string, force?: boolean) => Promise<string>;
   grammar: Record<number, string>;
   grammarLoadingId: number | null;
   onBack: () => void;
@@ -100,7 +100,7 @@ interface QuizCardProps {
   setCja: (value: string | null) => void;
   cenValue: string | undefined;
   setCen: (value: string | null) => void;
-  fetchGrammar: (phraseId: number, enText: string) => Promise<string>;
+  fetchGrammar: (phraseId: number, enText: string, force?: boolean) => Promise<string>;
   grammar: string | undefined;
   grammarLoading: boolean;
 }
@@ -194,16 +194,28 @@ function QuizCard({
       )}
 
       <div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={async () => {
-            setShowGrammar(true);
-            await fetchGrammar(phrase.id, phrase.en);
-          }}
-        >
-          📖 文法解説を見る
-        </Button>
+        <div className="flex justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              setShowGrammar(true);
+              await fetchGrammar(phrase.id, phrase.en);
+            }}
+          >
+            📖 文法解説を見る
+          </Button>
+          {showGrammar && (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={grammarLoading}
+              onClick={() => fetchGrammar(phrase.id, phrase.en, true)}
+            >
+              🔄 再生成
+            </Button>
+          )}
+        </div>
         {showGrammar && (
           <p className="text-sm text-gray-600 mt-2 text-left whitespace-pre-wrap">
             {grammarLoading ? "読み込み中..." : grammar ?? ""}
