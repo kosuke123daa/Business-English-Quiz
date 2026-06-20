@@ -7,11 +7,22 @@ import type { MarksMap, PhraseSet } from "@/types";
 interface SetsScreenProps {
   sets: PhraseSet[];
   marksBySet: Record<string, MarksMap>;
+  customSetIds: string[];
   onSelect: (setId: string) => void;
   onUploadCsv: (file: File) => void;
+  onRenameSet: (setId: string, newName: string) => void;
+  onDeleteSet: (setId: string) => void;
 }
 
-export function SetsScreen({ sets, marksBySet, onSelect, onUploadCsv }: SetsScreenProps) {
+export function SetsScreen({
+  sets,
+  marksBySet,
+  customSetIds,
+  onSelect,
+  onUploadCsv,
+  onRenameSet,
+  onDeleteSet,
+}: SetsScreenProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -50,14 +61,40 @@ export function SetsScreen({ sets, marksBySet, onSelect, onUploadCsv }: SetsScre
         const done = Object.keys(marks).length;
         const correct = Object.values(marks).filter((m) => m === "o").length;
         const progress = total === 0 ? 0 : (done / total) * 100;
+        const isCustom = customSetIds.includes(set.id);
         return (
           <Card
             key={set.id}
             className="cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => onSelect(set.id)}
           >
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle style={{ color: set.color }}>{set.name}</CardTitle>
+              {isCustom && (
+                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      const name = window.prompt("新しいフレーズ集の名前を入力してください", set.name);
+                      if (name && name.trim() !== "") onRenameSet(set.id, name.trim());
+                    }}
+                  >
+                    ✏️
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (window.confirm(`「${set.name}」を削除しますか？この操作は取り消せません。`)) {
+                        onDeleteSet(set.id);
+                      }
+                    }}
+                  >
+                    🗑️
+                  </Button>
+                </div>
+              )}
             </CardHeader>
             <CardContent>
               <div className="flex justify-between text-sm text-gray-600 mb-2">

@@ -27,14 +27,3 @@ export interface CustomMap {
 export interface GrammarMap {
   [phraseId: number]: string;
 }
-
-// JSON エクスポート形式
-export interface ExportRecord {
-  setId: string;
-  groupNo: number;
-  phraseId: number;
-  en: string;
-  ja: string;
-  mark: Mark | null;
-  grammar: string | null;
-}
