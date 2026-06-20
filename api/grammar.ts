@@ -35,7 +35,7 @@ export default async function handler(req: Request): Promise<Response> {
         messages: [
           {
             role: "user",
-            content: `ビジネス英語学習者向けに以下フレーズの文法ポイントを日本語で3〜5文で解説してください。\n\n${enText}`,
+            content: `ビジネス英語学習者向けに以下フレーズの文法ポイントを日本語で3〜5文で解説してください。Markdown記法（**太字**、##見出しなど）は使わず、プレーンテキストのみで答えてください。\n\n${enText}`,
           },
         ],
       }),
