@@ -1,73 +1,64 @@
-# React + TypeScript + Vite
+# beq（Business English Quiz）
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ビジネス英語フレーズ（300問）を効率よく暗記するためのクイズアプリ。
 
-Currently, two official plugins are available:
+詳しい設計・仕様は [CLAUDE.md](./CLAUDE.md) を参照してください。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 主要機能
 
-## React Compiler
+- 日→英 / 英→日 モード切替
+- ランダム出題（グループ入場時にシャッフル）
+- ✅正解 / ❌不正解 マーク（自動で次問へ）
+- 🔊TTS（カスタム英文があればそちらを読み上げ、Web Speech API使用）
+- ✏️英文・日本語訳のインライン編集
+- 📖文法解説（Anthropic API、解説はKVにキャッシュ）
+- 📤/📥 JSONエクスポート・インポート
+- グループ別進捗表示（✅/❌/残り・ミニ進捗バー）
+- ❌不正解まとめモード（セット内全不正解を横断出題）
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 技術スタック
 
-## Expanding the ESLint configuration
+- Framework: React + Vite
+- Language: TypeScript（strict mode）
+- Styling: Tailwind CSS + shadcn/ui 相当コンポーネント
+- Storage: Vercel KV（@vercel/kv、`beq:` プレフィックスで他プロジェクトと共用環境を分離）
+- AI API: Anthropic Messages API（`/api/grammar` 経由のサーバーサイドプロキシ）
+- TTS: Web Speech API（ブラウザネイティブ）
+- Deploy: Vercel
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## セットアップ
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+cp .env.local.example .env.local  # ANTHROPIC_API_KEY を設定
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Vercelにデプロイする場合は、ダッシュボードでKV Storageを作成してプロジェクトにリンクし、`ANTHROPIC_API_KEY` を Environment Variables に設定してください。
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## スクリプト
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| コマンド | 内容 |
+|---|---|
+| `npm run dev` | 開発サーバー起動 |
+| `npm run build` | 型チェック + 本番ビルド |
+| `npm run lint` | ESLint実行 |
+| `npm run preview` | ビルド結果のプレビュー |
+
+## ディレクトリ構成
+
+```
+beq/
+├── api/                  # Vercel Edge Functions（KV連携）
+│   ├── marks.ts          # 正解記録
+│   ├── custom.ts         # カスタム英文・日本語訳
+│   └── grammar.ts        # 文法解説（Anthropic API + KVキャッシュ）
+├── src/
+│   ├── types/            # 共通型定義
+│   ├── data/biz300.ts    # フレーズデータ（300問）
+│   ├── hooks/            # useMarks / useCustom / useGrammar
+│   ├── components/        # SetsScreen / GroupsScreen / QuizScreen など
+│   └── App.tsx
+├── CLAUDE.md             # 詳細仕様
+└── vercel.json
 ```
