@@ -6,8 +6,9 @@ import { QuizScreen } from "@/components/QuizScreen";
 import { useMarks } from "@/hooks/useMarks";
 import { useCustom } from "@/hooks/useCustom";
 import { useGrammar } from "@/hooks/useGrammar";
+import { useCustomSets } from "@/hooks/useCustomSets";
 import { parsePhraseCsv } from "@/utils/csv";
-import { loadCustomSets, saveCustomSets, makeCustomSetId, pickColor } from "@/utils/customSets";
+import { makeCustomSetId, pickColor } from "@/utils/customSets";
 import type { PhraseSet, Screen } from "@/types";
 
 const BUILTIN_SETS: PhraseSet[] = [
@@ -19,9 +20,9 @@ const GROUP_SIZE = 20;
 
 function App() {
   const [screen, setScreen] = useState<Screen>("sets");
-  const [customSets, setCustomSets] = useState<PhraseSet[]>(() => loadCustomSets());
+  const { customSets, addSet, renameSet, deleteSet } = useCustomSets();
   const SETS = [...BUILTIN_SETS, ...customSets];
-  const [setId, setSetId] = useState<string>(SETS[0].id);
+  const [setId, setSetId] = useState<string>(BUILTIN_SETS[0].id);
   const [groupNo, setGroupNo] = useState<number>(1);
   const [wrongMode, setWrongMode] = useState(false);
 
@@ -37,21 +38,15 @@ function App() {
     const name = file.name.replace(/\.csv$/i, "");
     const id = makeCustomSetId(name, SETS.map((s) => s.id));
     const newSet: PhraseSet = { id, name, color: pickColor(customSets.length), data };
-    const next = [...customSets, newSet];
-    setCustomSets(next);
-    saveCustomSets(next);
+    await addSet(newSet);
   }
 
   function handleRenameSet(id: string, newName: string) {
-    const next = customSets.map((s) => (s.id === id ? { ...s, name: newName } : s));
-    setCustomSets(next);
-    saveCustomSets(next);
+    renameSet(id, newName);
   }
 
   function handleDeleteSet(id: string) {
-    const next = customSets.filter((s) => s.id !== id);
-    setCustomSets(next);
-    saveCustomSets(next);
+    deleteSet(id);
     if (setId === id) {
       setSetId(BUILTIN_SETS[0].id);
       setScreen("sets");
