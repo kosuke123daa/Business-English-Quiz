@@ -52,6 +52,10 @@ export function QuizScreen({
     if (index + 1 < order.length) setIndex(index + 1);
   }
 
+  function prev() {
+    if (index > 0) setIndex(index - 1);
+  }
+
   return (
     <div className="flex flex-col gap-4 p-4 max-w-xl mx-auto">
       <div className="flex items-center justify-between">
@@ -87,6 +91,12 @@ export function QuizScreen({
         grammar={grammar[current.id]}
         grammarLoading={grammarLoadingId === current.id}
       />
+
+      <div className="flex justify-center">
+        <Button variant="outline" size="sm" disabled={index === 0} onClick={prev}>
+          ← 前の問題に戻る
+        </Button>
+      </div>
     </div>
   );
 }

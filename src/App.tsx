@@ -25,6 +25,7 @@ function App() {
   const [setId, setSetId] = useState<string>(BUILTIN_SETS[0].id);
   const [groupNo, setGroupNo] = useState<number>(1);
   const [wrongMode, setWrongMode] = useState(false);
+  const [groupWrongMode, setGroupWrongMode] = useState(false);
 
   const set = SETS.find((s) => s.id === setId)!;
 
@@ -61,9 +62,12 @@ function App() {
   // v1はシングルセット想定だが将来の複数セット対応に備えてsetId別に保持
   const marksBySet = { [setId]: marks };
 
+  const groupPhrases = set.data.slice((groupNo - 1) * GROUP_SIZE, groupNo * GROUP_SIZE);
   const quizPhrases = wrongMode
     ? set.data.filter((p) => marks[p.id] === "x")
-    : set.data.slice((groupNo - 1) * GROUP_SIZE, groupNo * GROUP_SIZE);
+    : groupWrongMode
+      ? groupPhrases.filter((p) => marks[p.id] === "x")
+      : groupPhrases;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -89,10 +93,18 @@ function App() {
           onSelectGroup={(g) => {
             setGroupNo(g);
             setWrongMode(false);
+            setGroupWrongMode(false);
+            setScreen("quiz");
+          }}
+          onSelectGroupWrongMode={(g) => {
+            setGroupNo(g);
+            setWrongMode(false);
+            setGroupWrongMode(true);
             setScreen("quiz");
           }}
           onSelectWrongMode={() => {
             setWrongMode(true);
+            setGroupWrongMode(false);
             setScreen("quiz");
           }}
           onBack={() => setScreen("sets")}

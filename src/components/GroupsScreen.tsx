@@ -9,11 +9,19 @@ interface GroupsScreenProps {
   set: PhraseSet;
   marks: MarksMap;
   onSelectGroup: (groupNo: number) => void;
+  onSelectGroupWrongMode: (groupNo: number) => void;
   onSelectWrongMode: () => void;
   onBack: () => void;
 }
 
-export function GroupsScreen({ set, marks, onSelectGroup, onSelectWrongMode, onBack }: GroupsScreenProps) {
+export function GroupsScreen({
+  set,
+  marks,
+  onSelectGroup,
+  onSelectGroupWrongMode,
+  onSelectWrongMode,
+  onBack,
+}: GroupsScreenProps) {
   const groupCount = Math.ceil(set.data.length / GROUP_SIZE);
   const totalWrong = Object.values(marks).filter((m) => m === "x").length;
 
@@ -55,6 +63,18 @@ export function GroupsScreen({ set, marks, onSelectGroup, onSelectWrongMode, onB
                   <span>残{remaining}</span>
                 </div>
                 <Progress value={progress} />
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="mt-2 w-full"
+                  disabled={wrong === 0}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectGroupWrongMode(groupNo);
+                  }}
+                >
+                  ❌ 不正解だけ（{wrong}）
+                </Button>
               </CardContent>
             </Card>
           );
