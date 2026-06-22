@@ -190,7 +190,16 @@ function QuizCard({
         </div>
       )}
 
-      {!revealed && <Button onClick={() => setRevealed(true)}>答えを見る</Button>}
+      {!revealed && (
+        <Button
+          onClick={() => {
+            setRevealed(true);
+            speak(enText);
+          }}
+        >
+          答えを見る
+        </Button>
+      )}
 
       {revealed && (
         <div className="flex justify-center gap-4">
