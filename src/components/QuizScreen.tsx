@@ -15,7 +15,7 @@ interface QuizScreenProps {
   cen: CustomMap;
   setCen: (phraseId: number, value: string | null) => void;
   fetchGrammar: (phraseId: number, enText: string, force?: boolean) => Promise<string>;
-  grammar: Record<number, string>;
+  grammar: Record<string, string>;
   grammarLoadingId: number | null;
   onBack: () => void;
 }
@@ -88,7 +88,7 @@ export function QuizScreen({
         cenValue={cen[current.id]}
         setCen={(v) => setCen(current.id, v)}
         fetchGrammar={fetchGrammar}
-        grammar={grammar[current.id]}
+        grammarMap={grammar}
         grammarLoading={grammarLoadingId === current.id}
       />
 
@@ -111,7 +111,7 @@ interface QuizCardProps {
   cenValue: string | undefined;
   setCen: (value: string | null) => void;
   fetchGrammar: (phraseId: number, enText: string, force?: boolean) => Promise<string>;
-  grammar: string | undefined;
+  grammarMap: Record<string, string>;
   grammarLoading: boolean;
 }
 
@@ -125,7 +125,7 @@ function QuizCard({
   cenValue,
   setCen,
   fetchGrammar,
-  grammar,
+  grammarMap,
   grammarLoading,
 }: QuizCardProps) {
   const [revealed, setRevealed] = useState(false);
@@ -134,6 +134,7 @@ function QuizCard({
 
   const enText = useMemo(() => cenValue ?? phrase.en, [cenValue, phrase.en]);
   const jaText = useMemo(() => cjaValue ?? phrase.ja, [cjaValue, phrase.ja]);
+  const grammar = grammarMap[`${phrase.id}::${enText}`];
 
   function speak(text: string) {
     if (!("speechSynthesis" in window)) return;
@@ -219,7 +220,7 @@ function QuizCard({
             size="sm"
             onClick={async () => {
               setShowGrammar(true);
-              await fetchGrammar(phrase.id, phrase.en);
+              await fetchGrammar(phrase.id, enText);
             }}
           >
             📖 文法解説を見る
@@ -229,7 +230,7 @@ function QuizCard({
               variant="outline"
               size="sm"
               disabled={grammarLoading}
-              onClick={() => fetchGrammar(phrase.id, phrase.en, true)}
+              onClick={() => fetchGrammar(phrase.id, enText, true)}
             >
               🔄 再生成
             </Button>

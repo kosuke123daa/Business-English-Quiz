@@ -25,5 +25,5 @@ export interface CustomMap {
 }
 
 export interface GrammarMap {
-  [phraseId: number]: string;
+  [grammarKey: string]: string;
 }

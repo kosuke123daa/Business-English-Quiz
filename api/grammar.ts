@@ -5,22 +5,36 @@ export const config = { runtime: "edge" };
 const KV_PRE = "beq";
 const MODEL = "claude-sonnet-4-6";
 
+// 同じphraseIdでも英文を編集した場合は別キャッシュとして扱う（編集前の解説は残したまま新しい解説を作る）
+function hashText(text: string): string {
+  let h = 5381;
+  for (let i = 0; i < text.length; i++) {
+    h = (h * 33) ^ text.charCodeAt(i);
+  }
+  return (h >>> 0).toString(36);
+}
+
+function cacheKey(phraseId: number, enText: string): string {
+  return `${KV_PRE}:gc:${phraseId}:${hashText(enText)}`;
+}
+
 export default async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
 
   // GET: キャッシュ確認
   if (req.method === "GET") {
-    const pid = url.searchParams.get("phraseId");
-    const cached = await kv.get<string>(`${KV_PRE}:gc:${pid}`);
+    const pid = Number(url.searchParams.get("phraseId"));
+    const enText = url.searchParams.get("enText") ?? "";
+    const cached = await kv.get<string>(cacheKey(pid, enText));
     return Response.json({ grammar: cached ?? null });
   }
 
   // POST: 未キャッシュなら Anthropic API 呼び出し（force指定時はキャッシュを無視して再生成）
   if (req.method === "POST") {
     const { phraseId, enText, force } = await req.json();
-    const cacheKey = `${KV_PRE}:gc:${phraseId}`;
+    const key = cacheKey(phraseId, enText);
     if (!force) {
-      const cached = await kv.get<string>(cacheKey);
+      const cached = await kv.get<string>(key);
       if (cached) return Response.json({ grammar: cached });
     }
 
@@ -45,9 +59,10 @@ export default async function handler(req: Request): Promise<Response> {
 
     const data = await res.json();
     const grammar = data.content?.[0]?.text ?? "取得できませんでした。";
-    await kv.set(cacheKey, grammar);
+    await kv.set(key, grammar);
     return Response.json({ grammar });
   }
 
   return new Response("Method Not Allowed", { status: 405 });
 }
+

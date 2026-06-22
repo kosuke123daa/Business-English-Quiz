@@ -1,13 +1,19 @@
 import { useCallback, useState } from "react";
 import type { GrammarMap } from "../types";
 
+// 英文を編集すると別の解説として扱うため、phraseIdと英文の組み合わせをキーにする
+function grammarKey(phraseId: number, enText: string): string {
+  return `${phraseId}::${enText}`;
+}
+
 export function useGrammar() {
   const [grammar, setGrammar] = useState<GrammarMap>({});
   const [loadingId, setLoadingId] = useState<number | null>(null);
 
   const fetchGrammar = useCallback(
     async (phraseId: number, enText: string, force = false) => {
-      if (!force && grammar[phraseId]) return grammar[phraseId];
+      const key = grammarKey(phraseId, enText);
+      if (!force && grammar[key]) return grammar[key];
       setLoadingId(phraseId);
       try {
         const res = await fetch("/api/grammar", {
@@ -16,7 +22,7 @@ export function useGrammar() {
           body: JSON.stringify({ phraseId, enText, force }),
         });
         const data = await res.json();
-        setGrammar((prev) => ({ ...prev, [phraseId]: data.grammar }));
+        setGrammar((prev) => ({ ...prev, [key]: data.grammar }));
         return data.grammar as string;
       } finally {
         setLoadingId(null);
