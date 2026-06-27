@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useDuplicateCheck } from "@/hooks/useDuplicateCheck";
+import { useExtractPhrases } from "@/hooks/useExtractPhrases";
 import { parsePhraseCsv } from "@/utils/csv";
 import type { DuplicateMatch, Phrase, PhraseSet } from "@/types";
 
@@ -23,8 +24,11 @@ export function ManagePhrasesScreen({ set, onAddPhrases, onDeletePhrase, onBack 
   const [ja, setJa] = useState("");
   const [pending, setPending] = useState<PendingImport | null>(null);
   const [approvedDuplicates, setApprovedDuplicates] = useState<Set<number>>(new Set());
+  const [extractedPreview, setExtractedPreview] = useState<{ en: string; ja: string }[] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const { checking, checkDuplicates } = useDuplicateCheck();
+  const { extracting, extractFromImage } = useExtractPhrases();
 
   async function startReview(candidates: { en: string; ja: string }[]) {
     const duplicates = await checkDuplicates(set.data, candidates);
@@ -51,6 +55,31 @@ export function ManagePhrasesScreen({ set, onAddPhrases, onDeletePhrase, onBack 
       return;
     }
     await startReview(parsed.map((p) => ({ en: p.en, ja: p.ja })));
+  }
+
+  async function handleUploadImage(file: File) {
+    const phrases = await extractFromImage(file);
+    if (phrases.length === 0) {
+      window.alert("画像からフレーズを読み取れませんでした。別の画像でお試しください。");
+      return;
+    }
+    setExtractedPreview(phrases);
+  }
+
+  function updatePreviewItem(index: number, field: "en" | "ja", value: string) {
+    setExtractedPreview((prev) => (prev ? prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)) : prev));
+  }
+
+  function removePreviewItem(index: number) {
+    setExtractedPreview((prev) => (prev ? prev.filter((_, i) => i !== index) : prev));
+  }
+
+  async function handleConfirmPreview() {
+    if (!extractedPreview) return;
+    const valid = extractedPreview.filter((p) => p.en.trim() !== "" && p.ja.trim() !== "");
+    setExtractedPreview(null);
+    if (valid.length === 0) return;
+    await startReview(valid);
   }
 
   function toggleApproved(candidateIndex: number) {
@@ -144,6 +173,46 @@ export function ManagePhrasesScreen({ set, onAddPhrases, onDeletePhrase, onBack 
     );
   }
 
+  if (extractedPreview) {
+    return (
+      <div className="flex flex-col gap-4 p-4 max-w-xl mx-auto">
+        <div className="flex items-center justify-between">
+          <Button variant="outline" size="sm" onClick={() => setExtractedPreview(null)}>
+            ← キャンセル
+          </Button>
+          <h1 className="text-xl font-bold">画像から読み取った内容を確認</h1>
+        </div>
+
+        <p className="text-sm text-gray-600">
+          読み取り内容に誤りがあれば編集・削除してください。確定すると重複チェックに進みます。
+        </p>
+
+        <div className="flex flex-col gap-2">
+          {extractedPreview.map((item, i) => (
+            <Card key={i}>
+              <CardContent className="pt-4 flex flex-col gap-2">
+                <Textarea value={item.en} onChange={(e) => updatePreviewItem(i, "en", e.target.value)} />
+                <Textarea value={item.ja} onChange={(e) => updatePreviewItem(i, "ja", e.target.value)} />
+                <Button variant="ghost" size="sm" onClick={() => removePreviewItem(i)}>
+                  🗑️ この行を削除
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div className="flex gap-2">
+          <Button onClick={handleConfirmPreview} disabled={checking}>
+            {checking ? "重複チェック中..." : "重複チェックして追加"}
+          </Button>
+          <Button variant="outline" onClick={() => setExtractedPreview(null)}>
+            キャンセル
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4 p-4 max-w-xl mx-auto">
       <div className="flex items-center justify-between">
@@ -152,6 +221,30 @@ export function ManagePhrasesScreen({ set, onAddPhrases, onDeletePhrase, onBack 
         </Button>
         <h1 className="text-xl font-bold">{set.name} を編集</h1>
       </div>
+
+      <Card>
+        <CardContent className="pt-4 flex flex-col gap-2">
+          <p className="text-sm text-gray-600 mb-1">画像から読み込む</p>
+          <p className="text-xs text-gray-500">
+            フレーズが写った画像（カメラ撮影 or ファイル選択）から英語・日本語フレーズを自動で読み取ります。読み取り後に内容を確認・編集できます。
+          </p>
+          <Button variant="outline" size="sm" disabled={extracting} onClick={() => imageInputRef.current?.click()}>
+            {extracting ? "画像を解析中..." : "📷 画像から読み込む"}
+          </Button>
+          <input
+            ref={imageInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleUploadImage(file);
+              e.target.value = "";
+            }}
+          />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardContent className="pt-4 flex flex-col gap-2">
