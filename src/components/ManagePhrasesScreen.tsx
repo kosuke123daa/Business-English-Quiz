@@ -27,6 +27,7 @@ export function ManagePhrasesScreen({ set, onAddPhrases, onDeletePhrase, onBack 
   const [extractedPreview, setExtractedPreview] = useState<{ en: string; ja: string }[] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const { checking, checkDuplicates } = useDuplicateCheck();
   const { extracting, extractFromImage } = useExtractPhrases();
 
@@ -228,14 +229,30 @@ export function ManagePhrasesScreen({ set, onAddPhrases, onDeletePhrase, onBack 
           <p className="text-xs text-gray-500">
             フレーズが写った画像（カメラ撮影 or ファイル選択）から英語・日本語フレーズを自動で読み取ります。読み取り後に内容を確認・編集できます。
           </p>
-          <Button variant="outline" size="sm" disabled={extracting} onClick={() => imageInputRef.current?.click()}>
-            {extracting ? "画像を解析中..." : "📷 画像から読み込む"}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={extracting} onClick={() => cameraInputRef.current?.click()}>
+              {extracting ? "画像を解析中..." : "📷 カメラで撮影"}
+            </Button>
+            <Button variant="outline" size="sm" disabled={extracting} onClick={() => imageInputRef.current?.click()}>
+              {extracting ? "画像を解析中..." : "🖼️ ファイルから選択"}
+            </Button>
+          </div>
+          <input
+            ref={cameraInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleUploadImage(file);
+              e.target.value = "";
+            }}
+          />
           <input
             ref={imageInputRef}
             type="file"
             accept="image/*"
-            capture="environment"
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0];
