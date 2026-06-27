@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,12 +8,20 @@ interface ManagePhrasesScreenProps {
   set: PhraseSet;
   onAddPhrase: (en: string, ja: string) => void;
   onDeletePhrase: (phraseId: number) => void;
+  onUploadCsv: (file: File) => void;
   onBack: () => void;
 }
 
-export function ManagePhrasesScreen({ set, onAddPhrase, onDeletePhrase, onBack }: ManagePhrasesScreenProps) {
+export function ManagePhrasesScreen({
+  set,
+  onAddPhrase,
+  onDeletePhrase,
+  onUploadCsv,
+  onBack,
+}: ManagePhrasesScreenProps) {
   const [en, setEn] = useState("");
   const [ja, setJa] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleAdd() {
     if (en.trim() === "" || ja.trim() === "") return;
@@ -30,6 +38,29 @@ export function ManagePhrasesScreen({ set, onAddPhrase, onDeletePhrase, onBack }
         </Button>
         <h1 className="text-xl font-bold">{set.name} を編集</h1>
       </div>
+
+      <Card>
+        <CardContent className="pt-4 flex flex-col gap-2">
+          <p className="text-sm text-gray-600 mb-1">CSVでまとめて追加</p>
+          <p className="text-xs text-gray-500">
+            「連番,英語フレーズ,日本語フレーズ」の3列構成のCSVをアップロードすると、このフレーズ集に追加されます。
+          </p>
+          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+            📥 CSVをアップロード
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,text/csv"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) onUploadCsv(file);
+              e.target.value = "";
+            }}
+          />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardContent className="pt-4 flex flex-col gap-2">
