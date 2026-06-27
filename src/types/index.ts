@@ -27,3 +27,9 @@ export interface CustomMap {
 export interface GrammarMap {
   [grammarKey: string]: string;
 }
+
+export interface DuplicateMatch {
+  candidateIndex: number;
+  existingId: number;
+  reason: string;
+}

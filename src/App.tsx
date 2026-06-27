@@ -61,27 +61,16 @@ function App() {
     }
   }
 
-  function handleAddPhrase(en: string, ja: string) {
-    const nextId = set.data.length === 0 ? 1 : Math.max(...set.data.map((p) => p.id)) + 1;
-    const next: Phrase[] = [...set.data, { id: nextId, en, ja }];
-    updateData(setId, next);
+  function handleAddPhrases(newPhrases: { en: string; ja: string }[]) {
+    if (newPhrases.length === 0) return;
+    let nextId = set.data.length === 0 ? 1 : Math.max(...set.data.map((p) => p.id)) + 1;
+    const added: Phrase[] = newPhrases.map((p) => ({ id: nextId++, en: p.en, ja: p.ja }));
+    updateData(setId, [...set.data, ...added]);
   }
 
   function handleDeletePhrase(phraseId: number) {
     const next = set.data.filter((p) => p.id !== phraseId);
     updateData(setId, next);
-  }
-
-  async function handleUploadCsvToSet(file: File) {
-    const text = await file.text();
-    const parsed = parsePhraseCsv(text);
-    if (parsed.length === 0) {
-      window.alert("CSVを読み取れませんでした。「連番,英語フレーズ,日本語フレーズ」の3列構成にしてください。");
-      return;
-    }
-    let nextId = set.data.length === 0 ? 1 : Math.max(...set.data.map((p) => p.id)) + 1;
-    const added: Phrase[] = parsed.map((p) => ({ id: nextId++, en: p.en, ja: p.ja }));
-    updateData(setId, [...set.data, ...added]);
   }
 
   const { marks, setMark } = useMarks(setId);
@@ -163,9 +152,8 @@ function App() {
       {screen === "manage" && (
         <ManagePhrasesScreen
           set={set}
-          onAddPhrase={handleAddPhrase}
+          onAddPhrases={handleAddPhrases}
           onDeletePhrase={handleDeletePhrase}
-          onUploadCsv={handleUploadCsvToSet}
           onBack={() => setScreen("groups")}
         />
       )}
