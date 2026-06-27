@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { phrasesToCsv } from "@/utils/csv";
 import type { MarksMap, PhraseSet } from "@/types";
 
-const GROUP_SIZE = 20;
+const GROUP_SIZE = 10;
 
 interface GroupsScreenProps {
   set: PhraseSet;

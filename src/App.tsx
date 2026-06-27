@@ -17,7 +17,7 @@ const BUILTIN_SETS: PhraseSet[] = [
   // 新セットはここに追加
 ];
 
-const GROUP_SIZE = 20;
+const GROUP_SIZE = 10;
 
 function App() {
   const [screen, setScreen] = useState<Screen>("sets");
