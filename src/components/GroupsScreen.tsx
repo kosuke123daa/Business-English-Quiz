@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { phrasesToCsv } from "@/utils/csv";
 import type { MarksMap, PhraseSet } from "@/types";
 
 const GROUP_SIZE = 20;
@@ -29,6 +30,17 @@ export function GroupsScreen({
   const groupCount = Math.ceil(set.data.length / GROUP_SIZE);
   const totalWrong = Object.values(marks).filter((m) => m === "x").length;
 
+  function handleExportCsv() {
+    const csv = phrasesToCsv(set.data);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${set.name}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="flex flex-col gap-4 p-4">
       <div className="flex items-center justify-between">
@@ -43,6 +55,10 @@ export function GroupsScreen({
           ✏️ フレーズを管理（追加・削除）
         </Button>
       )}
+
+      <Button variant="outline" disabled={set.data.length === 0} onClick={handleExportCsv}>
+        📤 CSVエクスポート
+      </Button>
 
       <Button variant="destructive" disabled={totalWrong === 0} onClick={onSelectWrongMode}>
         ❌ 不正解まとめモード（{totalWrong}問）

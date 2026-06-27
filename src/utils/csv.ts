@@ -57,3 +57,17 @@ export function parsePhraseCsv(text: string): Phrase[] {
       };
     });
 }
+
+function escapeCsvCell(value: string): string {
+  if (value.includes(",") || value.includes('"') || value.includes("\n")) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
+/** フレーズ集を「連番,英語フレーズ,日本語フレーズ」のCSV文字列に変換する */
+export function phrasesToCsv(phrases: Phrase[]): string {
+  const header = "連番,英語フレーズ,日本語フレーズ";
+  const rows = phrases.map((p) => [String(p.id), escapeCsvCell(p.en), escapeCsvCell(p.ja)].join(","));
+  return [header, ...rows].join("\n");
+}
