@@ -5,6 +5,7 @@ import { GroupsScreen } from "@/components/GroupsScreen";
 import { QuizScreen } from "@/components/QuizScreen";
 import { ManagePhrasesScreen } from "@/components/ManagePhrasesScreen";
 import { useMarks } from "@/hooks/useMarks";
+import { useStudied } from "@/hooks/useStudied";
 import { useCustom } from "@/hooks/useCustom";
 import { useGrammar } from "@/hooks/useGrammar";
 import { useCustomSets } from "@/hooks/useCustomSets";
@@ -74,6 +75,7 @@ function App() {
   }
 
   const { marks, setMark } = useMarks(setId);
+  const { studied, recordStudied } = useStudied(setId);
   const { custom: cja, setValue: setCja } = useCustom(setId, "ja");
   const { custom: cen, setValue: setCen } = useCustom(setId, "en");
   const { grammar, loadingId, fetchGrammar } = useGrammar();
@@ -110,6 +112,7 @@ function App() {
         <GroupsScreen
           set={set}
           marks={marks}
+          studied={studied}
           isCustom={customSets.some((s) => s.id === setId)}
           onManagePhrases={() => setScreen("manage")}
           onSelectGroup={(g) => {
@@ -117,12 +120,14 @@ function App() {
             setWrongMode(false);
             setGroupWrongMode(false);
             setScreen("quiz");
+            recordStudied(g);
           }}
           onSelectGroupWrongMode={(g) => {
             setGroupNo(g);
             setWrongMode(false);
             setGroupWrongMode(true);
             setScreen("quiz");
+            recordStudied(g);
           }}
           onSelectWrongMode={() => {
             setWrongMode(true);

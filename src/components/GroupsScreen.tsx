@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { phrasesToCsv } from "@/utils/csv";
+import type { StudiedMap } from "@/hooks/useStudied";
 import type { MarksMap, PhraseSet } from "@/types";
 
 const GROUP_SIZE = 10;
@@ -9,6 +10,7 @@ const GROUP_SIZE = 10;
 interface GroupsScreenProps {
   set: PhraseSet;
   marks: MarksMap;
+  studied: StudiedMap;
   isCustom: boolean;
   onSelectGroup: (groupNo: number) => void;
   onSelectGroupWrongMode: (groupNo: number) => void;
@@ -20,6 +22,7 @@ interface GroupsScreenProps {
 export function GroupsScreen({
   set,
   marks,
+  studied,
   isCustom,
   onSelectGroup,
   onSelectGroupWrongMode,
@@ -95,6 +98,9 @@ export function GroupsScreen({
                   <span>残{remaining}</span>
                 </div>
                 <Progress value={progress} />
+                <p className="text-xs text-gray-500 mt-2">
+                  最終学習日: {studied[groupNo] ?? "未学習"}
+                </p>
                 <Button
                   variant="destructive"
                   size="sm"
