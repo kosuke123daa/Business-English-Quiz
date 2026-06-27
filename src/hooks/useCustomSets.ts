@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { PhraseSet } from "../types";
+import type { Phrase, PhraseSet } from "../types";
 
 export function useCustomSets() {
   const [customSets, setCustomSets] = useState<PhraseSet[]>([]);
@@ -43,5 +43,14 @@ export function useCustomSets() {
     await fetch(`/api/sets?id=${id}`, { method: "DELETE" });
   }, []);
 
-  return { customSets, loading, addSet, renameSet, deleteSet };
+  const updateData = useCallback(async (id: string, data: Phrase[]) => {
+    setCustomSets((prev) => prev.map((s) => (s.id === id ? { ...s, data } : s)));
+    await fetch("/api/sets", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, data }),
+    });
+  }, []);
+
+  return { customSets, loading, addSet, renameSet, deleteSet, updateData };
 }

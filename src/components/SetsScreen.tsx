@@ -10,6 +10,7 @@ interface SetsScreenProps {
   customSetIds: string[];
   onSelect: (setId: string) => void;
   onUploadCsv: (file: File) => void;
+  onCreateEmptySet: (name: string) => void;
   onRenameSet: (setId: string, newName: string) => void;
   onDeleteSet: (setId: string) => void;
 }
@@ -20,6 +21,7 @@ export function SetsScreen({
   customSetIds,
   onSelect,
   onUploadCsv,
+  onCreateEmptySet,
   onRenameSet,
   onDeleteSet,
 }: SetsScreenProps) {
@@ -37,10 +39,24 @@ export function SetsScreen({
             各行は「連番, 英語フレーズ, 日本語フレーズ」の3列で構成してください（1行目はヘッダーでもOK）。
             <br />
             アップロードしたCSVのファイル名（拡張子を除く）がそのままフレーズ集の名前になります。
+            <br />
+            CSVを使わず、空のフレーズ集を作ってから画面上で1件ずつ手動追加することもできます。
           </p>
-          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
-            📥 CSVをアップロードしてフレーズ集を追加
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+              📥 CSVをアップロードしてフレーズ集を追加
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const name = window.prompt("新しいフレーズ集の名前を入力してください");
+                if (name && name.trim() !== "") onCreateEmptySet(name.trim());
+              }}
+            >
+              ＋ 空のフレーズ集を作成
+            </Button>
+          </div>
           <input
             ref={fileInputRef}
             type="file"

@@ -37,10 +37,14 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   if (req.method === "PATCH") {
-    const { id, name } = await req.json();
+    const { id, name, data } = await req.json();
     const existing = await kv.get<StoredSet>(setKey(id));
     if (!existing) return new Response("Not Found", { status: 404 });
-    const updated = { ...existing, name };
+    const updated = {
+      ...existing,
+      ...(name !== undefined ? { name } : {}),
+      ...(data !== undefined ? { data } : {}),
+    };
     await kv.set(setKey(id), updated);
     return Response.json({ ok: true });
   }

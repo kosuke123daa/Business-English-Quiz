@@ -8,18 +8,22 @@ const GROUP_SIZE = 20;
 interface GroupsScreenProps {
   set: PhraseSet;
   marks: MarksMap;
+  isCustom: boolean;
   onSelectGroup: (groupNo: number) => void;
   onSelectGroupWrongMode: (groupNo: number) => void;
   onSelectWrongMode: () => void;
+  onManagePhrases: () => void;
   onBack: () => void;
 }
 
 export function GroupsScreen({
   set,
   marks,
+  isCustom,
   onSelectGroup,
   onSelectGroupWrongMode,
   onSelectWrongMode,
+  onManagePhrases,
   onBack,
 }: GroupsScreenProps) {
   const groupCount = Math.ceil(set.data.length / GROUP_SIZE);
@@ -34,9 +38,21 @@ export function GroupsScreen({
         <h1 className="text-xl font-bold">{set.name}</h1>
       </div>
 
+      {isCustom && (
+        <Button variant="outline" onClick={onManagePhrases}>
+          ✏️ フレーズを管理（追加・削除）
+        </Button>
+      )}
+
       <Button variant="destructive" disabled={totalWrong === 0} onClick={onSelectWrongMode}>
         ❌ 不正解まとめモード（{totalWrong}問）
       </Button>
+
+      {set.data.length === 0 && (
+        <p className="text-sm text-gray-500">
+          フレーズがまだ登録されていません。「✏️ フレーズを管理」から追加してください。
+        </p>
+      )}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {Array.from({ length: groupCount }, (_, i) => i + 1).map((groupNo) => {

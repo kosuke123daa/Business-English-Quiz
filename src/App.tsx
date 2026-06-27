@@ -3,13 +3,14 @@ import { BIZ300_DATA } from "@/data/biz300";
 import { SetsScreen } from "@/components/SetsScreen";
 import { GroupsScreen } from "@/components/GroupsScreen";
 import { QuizScreen } from "@/components/QuizScreen";
+import { ManagePhrasesScreen } from "@/components/ManagePhrasesScreen";
 import { useMarks } from "@/hooks/useMarks";
 import { useCustom } from "@/hooks/useCustom";
 import { useGrammar } from "@/hooks/useGrammar";
 import { useCustomSets } from "@/hooks/useCustomSets";
 import { parsePhraseCsv } from "@/utils/csv";
 import { makeCustomSetId, pickColor } from "@/utils/customSets";
-import type { PhraseSet, Screen } from "@/types";
+import type { Phrase, PhraseSet, Screen } from "@/types";
 
 const BUILTIN_SETS: PhraseSet[] = [
   { id: "biz300", name: "ビジネス英語300", color: "#2563eb", data: BIZ300_DATA },
@@ -20,7 +21,7 @@ const GROUP_SIZE = 20;
 
 function App() {
   const [screen, setScreen] = useState<Screen>("sets");
-  const { customSets, addSet, renameSet, deleteSet } = useCustomSets();
+  const { customSets, addSet, renameSet, deleteSet, updateData } = useCustomSets();
   const SETS = [...BUILTIN_SETS, ...customSets];
   const [setId, setSetId] = useState<string>(BUILTIN_SETS[0].id);
   const [groupNo, setGroupNo] = useState<number>(1);
@@ -42,6 +43,12 @@ function App() {
     await addSet(newSet);
   }
 
+  function handleCreateEmptySet(name: string) {
+    const id = makeCustomSetId(name, SETS.map((s) => s.id));
+    const newSet: PhraseSet = { id, name, color: pickColor(customSets.length), data: [] };
+    addSet(newSet);
+  }
+
   function handleRenameSet(id: string, newName: string) {
     renameSet(id, newName);
   }
@@ -52,6 +59,17 @@ function App() {
       setSetId(BUILTIN_SETS[0].id);
       setScreen("sets");
     }
+  }
+
+  function handleAddPhrase(en: string, ja: string) {
+    const nextId = set.data.length === 0 ? 1 : Math.max(...set.data.map((p) => p.id)) + 1;
+    const next: Phrase[] = [...set.data, { id: nextId, en, ja }];
+    updateData(setId, next);
+  }
+
+  function handleDeletePhrase(phraseId: number) {
+    const next = set.data.filter((p) => p.id !== phraseId);
+    updateData(setId, next);
   }
 
   const { marks, setMark } = useMarks(setId);
@@ -81,6 +99,7 @@ function App() {
             setScreen("groups");
           }}
           onUploadCsv={handleUploadCsv}
+          onCreateEmptySet={handleCreateEmptySet}
           onRenameSet={handleRenameSet}
           onDeleteSet={handleDeleteSet}
         />
@@ -90,6 +109,8 @@ function App() {
         <GroupsScreen
           set={set}
           marks={marks}
+          isCustom={customSets.some((s) => s.id === setId)}
+          onManagePhrases={() => setScreen("manage")}
           onSelectGroup={(g) => {
             setGroupNo(g);
             setWrongMode(false);
@@ -123,6 +144,15 @@ function App() {
           fetchGrammar={fetchGrammar}
           grammar={grammar}
           grammarLoadingId={loadingId}
+          onBack={() => setScreen("groups")}
+        />
+      )}
+
+      {screen === "manage" && (
+        <ManagePhrasesScreen
+          set={set}
+          onAddPhrase={handleAddPhrase}
+          onDeletePhrase={handleDeletePhrase}
           onBack={() => setScreen("groups")}
         />
       )}
