@@ -1,11 +1,18 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { phrasesToCsv } from "@/utils/csv";
 import type { StudiedMap } from "@/hooks/useStudied";
-import type { MarksMap, PhraseSet } from "@/types";
+import type { Mark, MarksMap, PhraseSet } from "@/types";
 
 const GROUP_SIZE = 10;
+
+const MARK_OPTIONS: { mark: Mark; label: string }[] = [
+  { mark: "o", label: "✅ 正解" },
+  { mark: "?", label: "🤔 怪しい" },
+  { mark: "x", label: "❌ 不正解" },
+];
 
 interface GroupsScreenProps {
   set: PhraseSet;
@@ -13,8 +20,8 @@ interface GroupsScreenProps {
   studied: StudiedMap;
   isCustom: boolean;
   onSelectGroup: (groupNo: number) => void;
-  onSelectGroupWrongMode: (groupNo: number) => void;
-  onSelectWrongMode: () => void;
+  onSelectGroupFiltered: (groupNo: number, marksFilter: Mark[]) => void;
+  onSelectSetFiltered: (marksFilter: Mark[]) => void;
   onManagePhrases: () => void;
   onShowList: () => void;
   onBack: () => void;
@@ -26,14 +33,25 @@ export function GroupsScreen({
   studied,
   isCustom,
   onSelectGroup,
-  onSelectGroupWrongMode,
-  onSelectWrongMode,
+  onSelectGroupFiltered,
+  onSelectSetFiltered,
   onManagePhrases,
   onShowList,
   onBack,
 }: GroupsScreenProps) {
   const groupCount = Math.ceil(set.data.length / GROUP_SIZE);
-  const totalWrong = Object.values(marks).filter((m) => m === "x").length;
+  const [selectedMarks, setSelectedMarks] = useState<Set<Mark>>(new Set());
+
+  function toggleSelectedMark(mark: Mark) {
+    setSelectedMarks((prev) => {
+      const next = new Set(prev);
+      if (next.has(mark)) next.delete(mark);
+      else next.add(mark);
+      return next;
+    });
+  }
+
+  const selectedCount = set.data.filter((p) => selectedMarks.has(marks[p.id] as Mark)).length;
 
   function handleExportCsv() {
     const csv = phrasesToCsv(set.data);
@@ -69,9 +87,26 @@ export function GroupsScreen({
         📋 フレーズ一覧を表示
       </Button>
 
-      <Button variant="destructive" disabled={totalWrong === 0} onClick={onSelectWrongMode}>
-        ❌ 不正解まとめモード（{totalWrong}問）
-      </Button>
+      <Card>
+        <CardContent className="pt-4 flex flex-col gap-2">
+          <p className="text-sm text-gray-600">まとめて勉強（セット全体から条件で絞り込み）</p>
+          <div className="flex gap-2">
+            {MARK_OPTIONS.map(({ mark, label }) => (
+              <Button
+                key={mark}
+                size="sm"
+                variant={selectedMarks.has(mark) ? "default" : "outline"}
+                onClick={() => toggleSelectedMark(mark)}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
+          <Button disabled={selectedMarks.size === 0 || selectedCount === 0} onClick={() => onSelectSetFiltered([...selectedMarks])}>
+            選択した条件で学習する（{selectedCount}問）
+          </Button>
+        </CardContent>
+      </Card>
 
       {set.data.length === 0 && (
         <p className="text-sm text-gray-500">
@@ -85,8 +120,9 @@ export function GroupsScreen({
           const phrases = set.data.slice(start, start + GROUP_SIZE);
           const correct = phrases.filter((p) => marks[p.id] === "o").length;
           const wrong = phrases.filter((p) => marks[p.id] === "x").length;
-          const remaining = phrases.length - correct - wrong;
-          const progress = phrases.length === 0 ? 0 : ((correct + wrong) / phrases.length) * 100;
+          const uncertain = phrases.filter((p) => marks[p.id] === "?").length;
+          const remaining = phrases.length - correct - wrong - uncertain;
+          const progress = phrases.length === 0 ? 0 : ((correct + wrong + uncertain) / phrases.length) * 100;
 
           return (
             <Card
@@ -100,6 +136,7 @@ export function GroupsScreen({
               <CardContent>
                 <div className="flex justify-between text-xs text-gray-600 mb-2">
                   <span>✅{correct}</span>
+                  <span>🤔{uncertain}</span>
                   <span>❌{wrong}</span>
                   <span>残{remaining}</span>
                 </div>
@@ -107,18 +144,41 @@ export function GroupsScreen({
                 <p className="text-xs text-gray-500 mt-2">
                   最終学習日: {studied[groupNo] ?? "未学習"}
                 </p>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="mt-2 w-full"
-                  disabled={wrong === 0}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelectGroupWrongMode(groupNo);
-                  }}
-                >
-                  ❌ 不正解だけ（{wrong}）
-                </Button>
+                <div className="flex flex-col gap-1 mt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={correct === 0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectGroupFiltered(groupNo, ["o"]);
+                    }}
+                  >
+                    ✅ 正解だけ（{correct}）
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={uncertain === 0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectGroupFiltered(groupNo, ["?"]);
+                    }}
+                  >
+                    🤔 怪しいだけ（{uncertain}）
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    disabled={wrong === 0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectGroupFiltered(groupNo, ["x"]);
+                    }}
+                  >
+                    ❌ 不正解だけ（{wrong}）
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           );

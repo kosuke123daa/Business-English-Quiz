@@ -147,8 +147,8 @@ function QuizCard({
   return (
     <div className="rounded-lg border p-6 text-center flex flex-col gap-4">
       {mark && (
-        <Badge variant={mark === "o" ? "success" : "destructive"}>
-          {mark === "o" ? "✅ 正解済み" : "❌ 不正解済み"}
+        <Badge variant={mark === "o" ? "success" : mark === "x" ? "destructive" : "secondary"}>
+          {mark === "o" ? "✅ 正解済み" : mark === "x" ? "❌ 不正解済み" : "🤔 怪しい"}
         </Badge>
       )}
 
@@ -206,6 +206,9 @@ function QuizCard({
         <div className="flex justify-center gap-4">
           <Button variant="default" onClick={() => onMark("o")}>
             ✅ 正解
+          </Button>
+          <Button variant="outline" onClick={() => onMark("?")}>
+            🤔 まだ怪しい
           </Button>
           <Button variant="destructive" onClick={() => onMark("x")}>
             ❌ 不正解

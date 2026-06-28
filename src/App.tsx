@@ -12,7 +12,7 @@ import { useGrammar } from "@/hooks/useGrammar";
 import { useCustomSets } from "@/hooks/useCustomSets";
 import { parsePhraseCsv } from "@/utils/csv";
 import { makeCustomSetId, pickColor } from "@/utils/customSets";
-import type { Phrase, PhraseSet, Screen } from "@/types";
+import type { Mark, Phrase, PhraseSet, Screen } from "@/types";
 
 const BUILTIN_SETS: PhraseSet[] = [
   { id: "biz300", name: "ビジネス英語300", color: "#2563eb", data: BIZ300_DATA },
@@ -27,8 +27,9 @@ function App() {
   const SETS = [...BUILTIN_SETS, ...customSets];
   const [setId, setSetId] = useState<string>(BUILTIN_SETS[0].id);
   const [groupNo, setGroupNo] = useState<number>(1);
-  const [wrongMode, setWrongMode] = useState(false);
-  const [groupWrongMode, setGroupWrongMode] = useState(false);
+  // null = 通常のグループ全問モード。非nullなら絞り込み対象のmark一覧
+  const [studyFilter, setStudyFilter] = useState<Mark[] | null>(null);
+  const [studyScope, setStudyScope] = useState<"group" | "set">("group");
 
   const set = SETS.find((s) => s.id === setId)!;
 
@@ -85,11 +86,9 @@ function App() {
   const marksBySet = { [setId]: marks };
 
   const groupPhrases = set.data.slice((groupNo - 1) * GROUP_SIZE, groupNo * GROUP_SIZE);
-  const quizPhrases = wrongMode
-    ? set.data.filter((p) => marks[p.id] === "x")
-    : groupWrongMode
-      ? groupPhrases.filter((p) => marks[p.id] === "x")
-      : groupPhrases;
+  const quizPhrases = studyFilter
+    ? (studyScope === "set" ? set.data : groupPhrases).filter((p) => studyFilter.includes(marks[p.id] as Mark))
+    : groupPhrases;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -119,21 +118,20 @@ function App() {
           onShowList={() => setScreen("list")}
           onSelectGroup={(g) => {
             setGroupNo(g);
-            setWrongMode(false);
-            setGroupWrongMode(false);
+            setStudyFilter(null);
             setScreen("quiz");
             recordStudied(g);
           }}
-          onSelectGroupWrongMode={(g) => {
+          onSelectGroupFiltered={(g, marksFilter) => {
             setGroupNo(g);
-            setWrongMode(false);
-            setGroupWrongMode(true);
+            setStudyFilter(marksFilter);
+            setStudyScope("group");
             setScreen("quiz");
             recordStudied(g);
           }}
-          onSelectWrongMode={() => {
-            setWrongMode(true);
-            setGroupWrongMode(false);
+          onSelectSetFiltered={(marksFilter) => {
+            setStudyFilter(marksFilter);
+            setStudyScope("set");
             setScreen("quiz");
           }}
           onBack={() => setScreen("sets")}

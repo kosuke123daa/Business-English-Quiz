@@ -1,4 +1,4 @@
-export type Mark = "o" | "x";
+export type Mark = "o" | "x" | "?";
 export type Lang = "ja" | "en";
 export type QuizMode = "group" | "wrong";
 export type Screen = "sets" | "groups" | "quiz" | "manage" | "list";
