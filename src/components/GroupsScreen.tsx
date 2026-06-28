@@ -16,6 +16,7 @@ interface GroupsScreenProps {
   onSelectGroupWrongMode: (groupNo: number) => void;
   onSelectWrongMode: () => void;
   onManagePhrases: () => void;
+  onShowList: () => void;
   onBack: () => void;
 }
 
@@ -28,6 +29,7 @@ export function GroupsScreen({
   onSelectGroupWrongMode,
   onSelectWrongMode,
   onManagePhrases,
+  onShowList,
   onBack,
 }: GroupsScreenProps) {
   const groupCount = Math.ceil(set.data.length / GROUP_SIZE);
@@ -61,6 +63,10 @@ export function GroupsScreen({
 
       <Button variant="outline" disabled={set.data.length === 0} onClick={handleExportCsv}>
         📤 CSVエクスポート
+      </Button>
+
+      <Button variant="outline" disabled={set.data.length === 0} onClick={onShowList}>
+        📋 フレーズ一覧を表示
       </Button>
 
       <Button variant="destructive" disabled={totalWrong === 0} onClick={onSelectWrongMode}>

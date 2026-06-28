@@ -4,6 +4,7 @@ import { SetsScreen } from "@/components/SetsScreen";
 import { GroupsScreen } from "@/components/GroupsScreen";
 import { QuizScreen } from "@/components/QuizScreen";
 import { ManagePhrasesScreen } from "@/components/ManagePhrasesScreen";
+import { PhraseListScreen } from "@/components/PhraseListScreen";
 import { useMarks } from "@/hooks/useMarks";
 import { useStudied } from "@/hooks/useStudied";
 import { useCustom } from "@/hooks/useCustom";
@@ -115,6 +116,7 @@ function App() {
           studied={studied}
           isCustom={customSets.some((s) => s.id === setId)}
           onManagePhrases={() => setScreen("manage")}
+          onShowList={() => setScreen("list")}
           onSelectGroup={(g) => {
             setGroupNo(g);
             setWrongMode(false);
@@ -162,6 +164,8 @@ function App() {
           onBack={() => setScreen("groups")}
         />
       )}
+
+      {screen === "list" && <PhraseListScreen set={set} onBack={() => setScreen("groups")} />}
     </div>
   );
 }
