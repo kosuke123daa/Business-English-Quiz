@@ -1,12 +1,11 @@
 import type { Phrase } from "../types";
 
-// パイプ区切りテキスト（1行1フレーズ）
+// パイプ区切りテキスト（1行1フレーズ）。重複削除・訳文修正済みの最終版（id1〜255が例文、256〜275が単語）
 const RAW = `I'm afraid I'll be a little late.|申し訳ございませんが、少し遅れます。
 I'll go directly to a client's office.|得意先に直行いたします。
 I'm not feeling well, so I'd like to take the day off today.|体調が悪いので、本日はお休みをいただきたく存じます。
 Oh, you're not feeling well? I'm sorry to hear that.|お加減が良くないのですね。お大事にしてください。
 I'll be about ten minutes late.|10分ほど遅れます。
-Certainly. I understand.|承知いたしました。
 Cutting it close again, aren't you?|また間際になってしまいましたね。
 I do apologize.|申し訳ございません。
 Where is Mr. Yamashita?|山下さんはどちらにいらっしゃいますか。
@@ -30,7 +29,6 @@ Yes, I'm already aware of that.|はい、そちらについては存じており
 Please give me a report on the results.|結果をご報告いただけますでしょうか。
 I got the okay from my client.|クライアントに了承していただきました。
 Could you give me a hand?|少々お手伝いいただけますでしょうか。
-Certainly.|承知いたしました。
 Please try to resolve this smoothly.|円満に解決していただけますでしょうか。
 I'll take care of it right away.|すぐに対処いたします。
 Could you help me with something?|ちょっと相談にのっていただけますか？
@@ -62,13 +60,9 @@ Please don't worry about it.|どうかお気になさらないでください。
 It's my mistake.|私の誤りでございます。
 It's nothing serious.|大したことではございません。
 It's my responsibility.|私の責任でございます。
-Please don't worry about it.|どうぞお気になさらないでください。
 I'll take the blame.|私が責任をとります。
-Please don't worry.|ご心配なさらないでください。
-I'm sorry for the trouble.|ご面倒をおかけして申し訳ございません。
 This happens quite often.|こうしたことはよくございます。
 I must not have been thinking clearly.|判断を誤っておりました。
-Please don't worry about it.|あまり気を落とさないでください。
 I'm not sure what I was thinking.|うっかりしておりました。
 There's always next time.|次の機会がございます。
 You did a great job.|よくやっていただきました。
@@ -80,8 +74,6 @@ That's truly impressive.|それは見事ですね。
 Please keep up the good work.|この調子で頑張ってください。
 I know I can count on you.|期待しております。
 You must be tired.|お疲れになったでしょう。
-You did a great job again today.|今日もよくやっていただきました。
-I knew you could do it!|やればできるではないですか！
 I knew you could do it.|あなたならやってくださると思っていました。
 Thank you for the compliment.|恐れ入ります。
 I'm sorry for the trouble.|お手数をおかけして申し訳ございませんでした。
@@ -92,7 +84,6 @@ Do you think you'll be able to manage?|やっていけそうでしょうか。
 I think I'm getting on well with them.|みんなとうまくやっていけると思います。
 Hello, Sakura English corporation. Ken Sato speaking.|はい、サクライングリッシュの佐藤ケンでございます。
 Thank you for calling.|お電話ありがとうございます。
-How may I help you?|どのようなご用件でしょうか？
 This is Sato from CCB.|CCB社の佐藤と申します。
 May I speak with Mr. Brown?|ブラウン様とお話しできますでしょうか。
 Let me transfer you to Mr. Brown, who is in charge.|担当のブラウンにおつなぎいたします。
@@ -121,10 +112,7 @@ Well, I'm afraid I have to go now.|申し訳ありませんが、そろそろ切
 I'm sorry, but the reception isn't very good here.|申し訳ございません、電波が弱いようでございます。
 Could you hold on a second?|そのまま少しまっていただけますか？
 I apologize, I dialed the wrong number.|失礼いたしました。番号を間違えました。
-I'd like to thank everyone for coming today.|本日は集まっていただきありがとうございます。
 Let's get started.|それでは始めましょう。
-Shall we start, everyone?|皆さん、始めましょうか？
-Let's begin.|始めましょう。
 Let's move on to today's agenda.|本日の議題に入りましょう。
 Are we ready to begin the meeting?|会議を始める準備はよろしいでしょうか。
 There are two items on today's agenda.|本日の議題は二つございます。
@@ -163,7 +151,6 @@ I don't have anything else to add.|とくに付け加えることはありませ
 I don't think it's going to fly.|それが受け入れられるとは思えません。
 I like it, but I'm not sure if our manager will.|私は良いと思いますが、上司が気に入るかは分かりません。
 That's exactly what I thought.|それが私の考えでございます。
-To make a long story short,|要するに、
 In short,|簡潔に申し上げますと、
 What I'm trying to say is,|申し上げたいことは、
 You may have a point there.|なるほど、一理ありますね。
@@ -172,26 +159,21 @@ I'd like to sum up our discussion today.|今日の話し合いをまとめたい
 Let's wrap up the meeting.|会議はお開きにしましょう。
 Just food for thought,|一つの案にすぎませんが、
 The point is,|要点は、
-I guess we'll finish here.|ここで終わりにしましょう。
 Thank you for your time.|貴重なお時間をありがとうございました。
 We had a productive meeting today.|大変有意義な会議となりました。
 May I help you?|いらっしゃいませ。
 How can I help you?|どのようなご用件でしょうか。
-May I ask the purpose of your visit?|どのようなご用件でしょうか。
 I have an appointment at 3pm. Is Mr. Brown available?|3時に約束をしております。ブラウンさんはいらっしゃいますか。
-May I ask your name?|お名前を伺ってもよろしいでしょうか。
 Could I have your name, please?|お名前を伺ってもよろしいでしょうか。
 I'm Ken Sato. I have an appointment at 3 p.m.|佐藤ケンと申します。3時にお約束をいただいております。
 Have you made an appointment?|お約束はしていますか？
 Actually, no, but I would just like to greet Mr. Brown.|いえ、しておりませんが、ブラウン様にご挨拶をしたく存じます。
-I have an appointment at 3 p.m. Is Mr. Brown available?|3時に約束をしております。ブラウンさんはいらっしゃいますか。
 We've been expecting you.|お待ちしておりました。
 Thank you for coming today.|本日はお越しいただきありがとうございます。
 I'll have him come right away.|すぐに呼んで参ります。
 He's on the way.|こちらに向かっております。
 Please have a seat while you wait.|おかけになってお待ちください。
 I'm sorry to keep you waiting.|お待たせして申し訳ございません。
-Thank you for waiting.|お待たせいたしました。
 Mr. Sato will be with you soon.|すぐに佐藤がまいります。
 Please come this way.|こちらへどうぞ。
 Could you please wait here?|こちらでお待ちいただけますか。
@@ -199,15 +181,12 @@ Please make yourself comfortable.|どうぞお楽になさってください。
 I'll see you off here.|では、ここで失礼します。
 Thank you for everything today.|本日はありがとうございました。
 Please give my regards to everyone.|皆様によろしくお伝えください。
-It's a pleasure to meet you.|お会いできて光栄です。
 I've been looking forward to meeting you.|お会いできるのを楽しみにしておりました。
 I'm glad to see you're doing well.|お元気そうで何よりです。
-You seem busy as usual.|相変わらず忙しそうですね。
 You always seem so busy.|いつもお忙しそうですね。
 How is your family?|ご家族はいかがですか？
 This is quite a nice office.|なかなか素敵なオフィスですね。
 Let me begin, please.|始めさせてください。
-Well, let's get down to business.|それでは本題に入らせていただきます。
 Please look at this document.|こちらの資料をご覧ください。
 Could you please read through this?|こちらをお読みいただけますでしょうか。
 Please let me explain.|ご説明させてください。
@@ -215,19 +194,15 @@ Would it be possible to get an estimate?|見積もりを出していただけま
 What about $1000?|1000ドルでいかがでしょうか。
 Could you possibly go a bit lower?|もう少しお安くなりませんでしょうか。
 You're right about that.|ごもっともです。
-I see what you mean.|おっしゃることはごもっともです。
 I understand your position.|そちらのお立場はよく理解できます。
 I'll think about it.|検討させていただきます。
 I can't make the decision by myself.|私の一存では決定できません。
 I'll have to talk with my superiors.|上司に相談いたします。
 I'll see you again.|またお会いしましょう。
-Thank you for your valuable time.|貴重なお時間を頂きありがとうございました。
 Could you drop this in the mailbox?|これをポストに投函していただけますでしょうか。
-Of course, no problem at all.|もちろんでございます。
 Could you fax this for me?|こちらをFaxしていただけますでしょうか。
 Certainly.|承知いたしました。
 I'm in a big hurry. Could you send it by courier?|急いでおりますので、バイク便で送っていただけますでしょうか。
-Of course, please leave it to me.|もちろんです。お任せください。
 I left my ID card at the office.|IDカードを会社に忘れてしまいました。
 Could someone answer the phone?|どなたか電話に出ていただけますか。
 I've put them on hold.|保留にしてお待ちいただいております。
