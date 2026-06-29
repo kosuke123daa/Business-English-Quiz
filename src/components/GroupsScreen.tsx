@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { phrasesToCsv } from "@/utils/csv";
 import type { StudiedMap } from "@/hooks/useStudied";
+import type { CategoryGroup } from "@/hooks/useCategories";
 import type { Mark, MarksMap, PhraseSet } from "@/types";
 
 const GROUP_SIZE = 10;
@@ -19,9 +20,13 @@ interface GroupsScreenProps {
   marks: MarksMap;
   studied: StudiedMap;
   isCustom: boolean;
+  categories: CategoryGroup[];
+  categorizing: boolean;
+  onGenerateCategories: () => void;
   onSelectGroup: (groupNo: number) => void;
   onSelectGroupFiltered: (groupNo: number, marksFilter: Mark[]) => void;
   onSelectSetFiltered: (marksFilter: Mark[]) => void;
+  onSelectCategory: (phraseIds: number[]) => void;
   onManagePhrases: () => void;
   onShowList: () => void;
   onBack: () => void;
@@ -32,9 +37,13 @@ export function GroupsScreen({
   marks,
   studied,
   isCustom,
+  categories,
+  categorizing,
+  onGenerateCategories,
   onSelectGroup,
   onSelectGroupFiltered,
   onSelectSetFiltered,
+  onSelectCategory,
   onManagePhrases,
   onShowList,
   onBack,
@@ -86,6 +95,40 @@ export function GroupsScreen({
       <Button variant="outline" disabled={set.data.length === 0} onClick={onShowList}>
         📋 フレーズ一覧を表示
       </Button>
+
+      <Card>
+        <CardContent className="pt-4 flex flex-col gap-2">
+          <p className="text-sm text-gray-600">テーマ別グループ（意味が似ているフレーズをAIでまとめて学習）</p>
+          <Button
+            variant="outline"
+            disabled={set.data.length === 0 || categorizing}
+            onClick={onGenerateCategories}
+          >
+            {categorizing ? "生成中..." : categories.length > 0 ? "🔄 再生成" : "🤖 似ている意味でグループ生成"}
+          </Button>
+          {categories.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
+              {categories.map((cat) => {
+                const phraseIds = cat.phraseIds.filter((id) => set.data.some((p) => p.id === id));
+                return (
+                  <Card
+                    key={cat.category}
+                    className="cursor-pointer hover:shadow-md transition-shadow"
+                    onClick={() => onSelectCategory(phraseIds)}
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-sm">{cat.category}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-xs text-gray-500">{phraseIds.length}問</p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardContent className="pt-4 flex flex-col gap-2">

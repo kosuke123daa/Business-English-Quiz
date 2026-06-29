@@ -10,6 +10,7 @@ import { useStudied } from "@/hooks/useStudied";
 import { useCustom } from "@/hooks/useCustom";
 import { useGrammar } from "@/hooks/useGrammar";
 import { useCustomSets } from "@/hooks/useCustomSets";
+import { useCategories } from "@/hooks/useCategories";
 import { parsePhraseCsv } from "@/utils/csv";
 import { makeCustomSetId, pickColor } from "@/utils/customSets";
 import type { Mark, Phrase, PhraseSet, Screen } from "@/types";
@@ -30,6 +31,8 @@ function App() {
   // null = 通常のグループ全問モード。非nullなら絞り込み対象のmark一覧
   const [studyFilter, setStudyFilter] = useState<Mark[] | null>(null);
   const [studyScope, setStudyScope] = useState<"group" | "set">("group");
+  // テーマ別グループ選択時の対象フレーズid（非nullの間はこちらを優先）
+  const [categoryFilter, setCategoryFilter] = useState<number[] | null>(null);
 
   const set = SETS.find((s) => s.id === setId)!;
 
@@ -81,14 +84,17 @@ function App() {
   const { custom: cja, setValue: setCja } = useCustom(setId, "ja");
   const { custom: cen, setValue: setCen } = useCustom(setId, "en");
   const { grammar, loadingId, fetchGrammar } = useGrammar();
+  const { categories, generating, generateCategories } = useCategories(setId);
 
   // v1はシングルセット想定だが将来の複数セット対応に備えてsetId別に保持
   const marksBySet = { [setId]: marks };
 
   const groupPhrases = set.data.slice((groupNo - 1) * GROUP_SIZE, groupNo * GROUP_SIZE);
-  const quizPhrases = studyFilter
-    ? (studyScope === "set" ? set.data : groupPhrases).filter((p) => studyFilter.includes(marks[p.id] as Mark))
-    : groupPhrases;
+  const quizPhrases = categoryFilter
+    ? set.data.filter((p) => categoryFilter.includes(p.id))
+    : studyFilter
+      ? (studyScope === "set" ? set.data : groupPhrases).filter((p) => studyFilter.includes(marks[p.id] as Mark))
+      : groupPhrases;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -114,11 +120,15 @@ function App() {
           marks={marks}
           studied={studied}
           isCustom={customSets.some((s) => s.id === setId)}
+          categories={categories}
+          categorizing={generating}
+          onGenerateCategories={() => generateCategories(set.data)}
           onManagePhrases={() => setScreen("manage")}
           onShowList={() => setScreen("list")}
           onSelectGroup={(g) => {
             setGroupNo(g);
             setStudyFilter(null);
+            setCategoryFilter(null);
             setScreen("quiz");
             recordStudied(g);
           }}
@@ -126,12 +136,19 @@ function App() {
             setGroupNo(g);
             setStudyFilter(marksFilter);
             setStudyScope("group");
+            setCategoryFilter(null);
             setScreen("quiz");
             recordStudied(g);
           }}
           onSelectSetFiltered={(marksFilter) => {
             setStudyFilter(marksFilter);
             setStudyScope("set");
+            setCategoryFilter(null);
+            setScreen("quiz");
+          }}
+          onSelectCategory={(phraseIds) => {
+            setCategoryFilter(phraseIds);
+            setStudyFilter(null);
             setScreen("quiz");
           }}
           onBack={() => setScreen("sets")}
