@@ -11,20 +11,21 @@ import { useCustom } from "@/hooks/useCustom";
 import { useGrammar } from "@/hooks/useGrammar";
 import { useCustomSets } from "@/hooks/useCustomSets";
 import { useCategories } from "@/hooks/useCategories";
+import { useBuiltinOverride } from "@/hooks/useBuiltinOverride";
+import { DuplicateCleanupScreen } from "@/components/DuplicateCleanupScreen";
 import { parsePhraseCsv } from "@/utils/csv";
 import { makeCustomSetId, pickColor } from "@/utils/customSets";
-import type { Mark, Phrase, PhraseSet, Screen } from "@/types";
+import type { Mark, MarksMap, CustomMap, Phrase, PhraseSet, Screen } from "@/types";
 
-const BUILTIN_SETS: PhraseSet[] = [
-  { id: "biz300", name: "ビジネス英語300", color: "#2563eb", data: BIZ300_DATA },
-  // 新セットはここに追加
-];
+const BUILTIN_ID = "biz300";
 
 const GROUP_SIZE = 10;
 
 function App() {
   const [screen, setScreen] = useState<Screen>("sets");
   const { customSets, addSet, renameSet, deleteSet, updateData } = useCustomSets();
+  const { data: biz300Data, updateData: updateBiz300Data } = useBuiltinOverride(BUILTIN_ID, BIZ300_DATA);
+  const BUILTIN_SETS: PhraseSet[] = [{ id: BUILTIN_ID, name: "ビジネス英語300", color: "#2563eb", data: biz300Data }];
   const SETS = [...BUILTIN_SETS, ...customSets];
   const [setId, setSetId] = useState<string>(BUILTIN_SETS[0].id);
   const [groupNo, setGroupNo] = useState<number>(1);
@@ -79,10 +80,37 @@ function App() {
     updateData(setId, next);
   }
 
-  const { marks, setMark } = useMarks(setId);
+  function handleUpdateSetData(id: string, data: Phrase[]) {
+    if (id === BUILTIN_ID) updateBiz300Data(data);
+    else updateData(id, data);
+  }
+
+  function handleCleanupDuplicates(idsToDelete: Set<number>) {
+    const kept = set.data.filter((p) => !idsToDelete.has(p.id));
+    const remap = new Map<number, number>();
+    kept.forEach((p, i) => remap.set(p.id, i + 1));
+    const newData: Phrase[] = kept.map((p, i) => ({ ...p, id: i + 1 }));
+
+    const remapMap = <T,>(map: Record<number, T>): Record<number, T> => {
+      const next: Record<number, T> = {};
+      Object.entries(map).forEach(([oldIdStr, value]) => {
+        const newId = remap.get(Number(oldIdStr));
+        if (newId !== undefined) next[newId] = value;
+      });
+      return next;
+    };
+
+    handleUpdateSetData(setId, newData);
+    replaceMarks(remapMap(marks) as MarksMap);
+    replaceCja(remapMap(cja) as CustomMap);
+    replaceCen(remapMap(cen) as CustomMap);
+    setScreen("groups");
+  }
+
+  const { marks, setMark, replaceAll: replaceMarks } = useMarks(setId);
   const { studied, recordStudied } = useStudied(setId);
-  const { custom: cja, setValue: setCja } = useCustom(setId, "ja");
-  const { custom: cen, setValue: setCen } = useCustom(setId, "en");
+  const { custom: cja, setValue: setCja, replaceAll: replaceCja } = useCustom(setId, "ja");
+  const { custom: cen, setValue: setCen, replaceAll: replaceCen } = useCustom(setId, "en");
   const { grammar, loadingId, fetchGrammar } = useGrammar();
   const { categories, generating, generateCategories } = useCategories(setId);
 
@@ -125,6 +153,7 @@ function App() {
           onGenerateCategories={() => generateCategories(set.data)}
           onManagePhrases={() => setScreen("manage")}
           onShowList={() => setScreen("list")}
+          onShowDedupe={() => setScreen("dedupe")}
           onSelectGroup={(g) => {
             setGroupNo(g);
             setStudyFilter(null);
@@ -181,6 +210,14 @@ function App() {
       )}
 
       {screen === "list" && <PhraseListScreen set={set} onBack={() => setScreen("groups")} />}
+
+      {screen === "dedupe" && (
+        <DuplicateCleanupScreen
+          set={set}
+          onConfirm={handleCleanupDuplicates}
+          onBack={() => setScreen("groups")}
+        />
+      )}
     </div>
   );
 }

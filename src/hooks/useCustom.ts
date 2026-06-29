@@ -37,5 +37,17 @@ export function useCustom(setId: string, lang: Lang) {
     [setId, lang],
   );
 
-  return { custom, loading, setValue };
+  const replaceAll = useCallback(
+    async (newCustom: CustomMap) => {
+      setCustom(newCustom);
+      await fetch(`/api/custom?setId=${setId}&lang=${lang}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCustom),
+      });
+    },
+    [setId, lang],
+  );
+
+  return { custom, loading, setValue, replaceAll };
 }

@@ -30,6 +30,7 @@ interface GroupsScreenProps {
   onSelectCategory: (phraseIds: number[]) => void;
   onManagePhrases: () => void;
   onShowList: () => void;
+  onShowDedupe: () => void;
   onBack: () => void;
 }
 
@@ -47,6 +48,7 @@ export function GroupsScreen({
   onSelectCategory,
   onManagePhrases,
   onShowList,
+  onShowDedupe,
   onBack,
 }: GroupsScreenProps) {
   const groupCount = Math.ceil(set.data.length / GROUP_SIZE);
@@ -95,6 +97,10 @@ export function GroupsScreen({
 
       <Button variant="outline" disabled={set.data.length === 0} onClick={onShowList}>
         📋 フレーズ一覧を表示
+      </Button>
+
+      <Button variant="outline" disabled={set.data.length < 2} onClick={onShowDedupe}>
+        🔍 重複チェック・削除
       </Button>
 
       {set.data.length === 0 && (

@@ -26,5 +26,11 @@ export default async function handler(req: Request): Promise<Response> {
     return Response.json({ ok: true });
   }
 
+  if (req.method === "PUT") {
+    const map = await req.json();
+    await kv.set(key, map);
+    return Response.json({ ok: true });
+  }
+
   return new Response("Method Not Allowed", { status: 405 });
 }

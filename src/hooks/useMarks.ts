@@ -37,5 +37,17 @@ export function useMarks(setId: string) {
     [setId],
   );
 
-  return { marks, loading, setMark };
+  const replaceAll = useCallback(
+    async (newMarks: MarksMap) => {
+      setMarks(newMarks);
+      await fetch(`/api/marks?setId=${setId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newMarks),
+      });
+    },
+    [setId],
+  );
+
+  return { marks, loading, setMark, replaceAll };
 }
