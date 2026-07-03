@@ -83,6 +83,10 @@ export function QuizScreen({
           setMark(current.id, value);
           next();
         }}
+        onSkip={() => {
+          setMark(current.id, "skip");
+          next();
+        }}
         cjaValue={cja[current.id]}
         setCja={(v) => setCja(current.id, v)}
         cenValue={cen[current.id]}
@@ -106,6 +110,7 @@ interface QuizCardProps {
   direction: Lang;
   mark: Mark | undefined;
   onMark: (value: Mark) => void;
+  onSkip: () => void;
   cjaValue: string | undefined;
   setCja: (value: string | null) => void;
   cenValue: string | undefined;
@@ -120,6 +125,7 @@ function QuizCard({
   direction,
   mark,
   onMark,
+  onSkip,
   cjaValue,
   setCja,
   cenValue,
@@ -147,8 +153,8 @@ function QuizCard({
   return (
     <div className="rounded-lg border p-6 text-center flex flex-col gap-4">
       {mark && (
-        <Badge variant={mark === "o" ? "success" : mark === "x" ? "destructive" : "secondary"}>
-          {mark === "o" ? "✅ 正解済み" : mark === "x" ? "❌ 不正解済み" : "🤔 怪しい"}
+        <Badge variant={mark === "o" ? "success" : mark === "x" ? "destructive" : mark === "skip" ? "outline" : "secondary"}>
+          {mark === "o" ? "✅ 正解済み" : mark === "x" ? "❌ 不正解済み" : mark === "skip" ? "⛔ 除外中" : "🤔 怪しい"}
         </Badge>
       )}
 
@@ -215,6 +221,17 @@ function QuizCard({
           </Button>
         </div>
       )}
+
+      <div className="flex justify-center">
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-gray-400 border-gray-300"
+          onClick={onSkip}
+        >
+          ⛔ 除外する{mark === "skip" ? "（除外中）" : ""}
+        </Button>
+      </div>
 
       <div>
         <div className="flex justify-center gap-2">

@@ -63,7 +63,7 @@ export function GroupsScreen({
     });
   }
 
-  const selectedCount = set.data.filter((p) => selectedMarks.has(marks[p.id] as Mark)).length;
+  const selectedCount = set.data.filter((p) => marks[p.id] !== "skip" && selectedMarks.has(marks[p.id] as Mark)).length;
 
   function handleExportCsv() {
     const csv = phrasesToCsv(set.data);
@@ -141,11 +141,13 @@ export function GroupsScreen({
             {Array.from({ length: groupCount }, (_, i) => i + 1).map((groupNo) => {
               const start = (groupNo - 1) * GROUP_SIZE;
               const phrases = set.data.slice(start, start + GROUP_SIZE);
+              const skipped = phrases.filter((p) => marks[p.id] === "skip").length;
+              const active = phrases.length - skipped;
               const correct = phrases.filter((p) => marks[p.id] === "o").length;
               const wrong = phrases.filter((p) => marks[p.id] === "x").length;
               const uncertain = phrases.filter((p) => marks[p.id] === "?").length;
-              const remaining = phrases.length - correct - wrong - uncertain;
-              const progress = phrases.length === 0 ? 0 : ((correct + wrong + uncertain) / phrases.length) * 100;
+              const remaining = active - correct - wrong - uncertain;
+              const progress = active === 0 ? 100 : ((correct + wrong + uncertain) / active) * 100;
 
               return (
                 <Card
@@ -162,6 +164,7 @@ export function GroupsScreen({
                       <span>🤔{uncertain}</span>
                       <span>❌{wrong}</span>
                       <span>残{remaining}</span>
+                      {skipped > 0 && <span className="text-gray-400">⛔{skipped}</span>}
                     </div>
                     <Progress value={progress} />
                     <p className="text-xs text-gray-500 mt-2">

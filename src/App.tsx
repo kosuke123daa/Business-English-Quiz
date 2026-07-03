@@ -118,11 +118,13 @@ function App() {
   const marksBySet = { [setId]: marks };
 
   const groupPhrases = set.data.slice((groupNo - 1) * GROUP_SIZE, groupNo * GROUP_SIZE);
-  const quizPhrases = categoryFilter
-    ? set.data.filter((p) => categoryFilter.includes(p.id))
-    : studyFilter
-      ? (studyScope === "set" ? set.data : groupPhrases).filter((p) => studyFilter.includes(marks[p.id] as Mark))
-      : groupPhrases;
+  const quizPhrases = (
+    categoryFilter
+      ? set.data.filter((p) => categoryFilter.includes(p.id))
+      : studyFilter
+        ? (studyScope === "set" ? set.data : groupPhrases).filter((p) => studyFilter.includes(marks[p.id] as Mark))
+        : groupPhrases
+  ).filter((p) => marks[p.id] !== "skip");
 
   return (
     <div className="min-h-screen bg-gray-50">
