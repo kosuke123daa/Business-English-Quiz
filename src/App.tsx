@@ -211,7 +211,7 @@ function App() {
         />
       )}
 
-      {screen === "list" && <PhraseListScreen set={set} onBack={() => setScreen("groups")} />}
+      {screen === "list" && <PhraseListScreen set={set} marks={marks} setMark={setMark} onBack={() => setScreen("groups")} />}
 
       {screen === "dedupe" && (
         <DuplicateCleanupScreen
