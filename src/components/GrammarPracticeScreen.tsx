@@ -37,7 +37,7 @@ export function GrammarPracticeScreen({ onSave, onBack }: GrammarPracticeScreenP
       const data = await res.json();
       if (!res.ok || !data.phrases) throw new Error(data.error ?? "生成に失敗しました");
       setGenerated(data.phrases);
-      setSetName(description.trim().slice(0, 20));
+      setSetName(description.trim().slice(0, 40));
     } catch (e) {
       setError(e instanceof Error ? e.message : "エラーが発生しました");
     } finally {
