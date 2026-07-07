@@ -1,7 +1,7 @@
 export type Mark = "o" | "x" | "?" | "skip";
 export type Lang = "ja" | "en";
 export type QuizMode = "group" | "wrong";
-export type Screen = "sets" | "groups" | "quiz" | "manage" | "list" | "dedupe";
+export type Screen = "sets" | "groups" | "quiz" | "manage" | "list" | "dedupe" | "grammar-practice";
 
 export interface Phrase {
   id: number;

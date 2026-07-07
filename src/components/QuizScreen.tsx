@@ -18,6 +18,7 @@ interface QuizScreenProps {
   grammar: Record<string, string>;
   grammarLoadingId: number | null;
   onBack: () => void;
+  onPracticeGrammar: () => void;
 }
 
 export function QuizScreen({
@@ -32,6 +33,7 @@ export function QuizScreen({
   grammar,
   grammarLoadingId,
   onBack,
+  onPracticeGrammar,
 }: QuizScreenProps) {
   const [order] = useState(() => shuffle(phrases));
   const [index, setIndex] = useState(0);
@@ -65,6 +67,9 @@ export function QuizScreen({
         <span className="text-sm text-gray-500">
           {index + 1} / {order.length}
         </span>
+        <Button variant="outline" size="sm" onClick={onPracticeGrammar}>
+          ✏️ 文法練習
+        </Button>
       </div>
 
       <Tabs value={direction} onValueChange={(v) => setDirection(v as Lang)}>

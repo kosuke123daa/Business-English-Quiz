@@ -13,6 +13,7 @@ import { useCustomSets } from "@/hooks/useCustomSets";
 import { useCategories } from "@/hooks/useCategories";
 import { useBuiltinOverride } from "@/hooks/useBuiltinOverride";
 import { DuplicateCleanupScreen } from "@/components/DuplicateCleanupScreen";
+import { GrammarPracticeScreen } from "@/components/GrammarPracticeScreen";
 import { parsePhraseCsv } from "@/utils/csv";
 import { makeCustomSetId, pickColor } from "@/utils/customSets";
 import type { Mark, MarksMap, CustomMap, Phrase, PhraseSet, Screen } from "@/types";
@@ -199,6 +200,7 @@ function App() {
           grammar={grammar}
           grammarLoadingId={loadingId}
           onBack={() => setScreen("groups")}
+          onPracticeGrammar={() => setScreen("grammar-practice")}
         />
       )}
 
@@ -218,6 +220,17 @@ function App() {
           set={set}
           onConfirm={handleCleanupDuplicates}
           onBack={() => setScreen("groups")}
+        />
+      )}
+
+      {screen === "grammar-practice" && (
+        <GrammarPracticeScreen
+          onSave={(name, phrases) => {
+            const id = makeCustomSetId(name, SETS.map((s) => s.id));
+            const newSet: PhraseSet = { id, name, color: pickColor(customSets.length), data: phrases };
+            addSet(newSet);
+          }}
+          onBack={() => setScreen("quiz")}
         />
       )}
     </div>
