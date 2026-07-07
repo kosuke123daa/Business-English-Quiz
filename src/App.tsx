@@ -27,7 +27,9 @@ function App() {
   const { customSets, addSet, renameSet, deleteSet, updateData } = useCustomSets();
   const { data: biz300Data, updateData: updateBiz300Data } = useBuiltinOverride(BUILTIN_ID, BIZ300_DATA);
   const BUILTIN_SETS: PhraseSet[] = [{ id: BUILTIN_ID, name: "ビジネス英語300", color: "#2563eb", data: biz300Data }];
-  const SETS = [...BUILTIN_SETS, ...customSets];
+  const gpSets = customSets.filter((s) => s.id.startsWith("gp-"));
+  const regularCustomSets = customSets.filter((s) => !s.id.startsWith("gp-"));
+  const SETS = [...BUILTIN_SETS, ...regularCustomSets, ...gpSets];
   const [setId, setSetId] = useState<string>(BUILTIN_SETS[0].id);
   const [groupNo, setGroupNo] = useState<number>(1);
   // null = 通常のグループ全問モード。非nullなら絞り込み対象のmark一覧
@@ -131,7 +133,8 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       {screen === "sets" && (
         <SetsScreen
-          sets={SETS}
+          sets={[...BUILTIN_SETS, ...regularCustomSets]}
+          gpSets={gpSets}
           marksBySet={marksBySet}
           customSetIds={customSets.map((s) => s.id)}
           onSelect={(id) => {
@@ -142,6 +145,7 @@ function App() {
           onCreateEmptySet={handleCreateEmptySet}
           onRenameSet={handleRenameSet}
           onDeleteSet={handleDeleteSet}
+          onCreateGrammarPractice={() => setScreen("grammar-practice")}
         />
       )}
 
@@ -200,7 +204,6 @@ function App() {
           grammar={grammar}
           grammarLoadingId={loadingId}
           onBack={() => setScreen("groups")}
-          onPracticeGrammar={() => setScreen("grammar-practice")}
         />
       )}
 
@@ -226,11 +229,11 @@ function App() {
       {screen === "grammar-practice" && (
         <GrammarPracticeScreen
           onSave={(name, phrases) => {
-            const id = makeCustomSetId(name, SETS.map((s) => s.id));
-            const newSet: PhraseSet = { id, name, color: pickColor(customSets.length), data: phrases };
+            const id = makeCustomSetId(`gp-${name}`, SETS.map((s) => s.id));
+            const newSet: PhraseSet = { id, name, color: pickColor(gpSets.length), data: phrases };
             addSet(newSet);
           }}
-          onBack={() => setScreen("quiz")}
+          onBack={() => setScreen("sets")}
         />
       )}
     </div>
