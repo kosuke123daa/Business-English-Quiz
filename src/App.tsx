@@ -229,7 +229,11 @@ function App() {
       {screen === "grammar-practice" && (
         <GrammarPracticeScreen
           onSave={(name, phrases) => {
-            const id = makeCustomSetId(`gp-${name}`, SETS.map((s) => s.id));
+            const base = `gp-${name.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+            const existingIds = SETS.map((s) => s.id);
+            let id = base;
+            let i = 2;
+            while (existingIds.includes(id)) { id = `${base}_${i}`; i++; }
             const newSet: PhraseSet = { id, name, color: pickColor(gpSets.length), data: phrases };
             addSet(newSet);
           }}
