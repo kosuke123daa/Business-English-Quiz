@@ -133,6 +133,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <div key={screen} className="screen-fade">
       {screen === "sets" && (
         <SetsScreen
           sets={[...BUILTIN_SETS, ...regularCustomSets]}
@@ -252,6 +253,7 @@ function App() {
           onBack={() => setScreen("sets")}
         />
       )}
+      </div>
     </div>
   );
 }
