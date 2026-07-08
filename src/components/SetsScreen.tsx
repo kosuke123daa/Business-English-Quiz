@@ -15,6 +15,8 @@ interface SetsScreenProps {
   onCreateEmptySet: (name: string) => void;
   onRenameSet: (setId: string, newName: string) => void;
   onDeleteSet: (setId: string) => void;
+  activeTab: "sets" | "grammar";
+  onTabChange: (tab: "sets" | "grammar") => void;
   onCreateGrammarPractice: () => void;
   onRegenerateGrammarSet: (setId: string, setName: string) => void;
 }
@@ -29,6 +31,8 @@ export function SetsScreen({
   onCreateEmptySet,
   onRenameSet,
   onDeleteSet,
+  activeTab,
+  onTabChange,
   onCreateGrammarPractice,
   onRegenerateGrammarSet,
 }: SetsScreenProps) {
@@ -90,7 +94,7 @@ export function SetsScreen({
     <div className="flex flex-col gap-4 p-4">
       <h1 className="text-xl font-bold">ビジネス英語クイズ</h1>
 
-      <Tabs defaultValue="sets">
+      <Tabs value={activeTab} onValueChange={(v) => onTabChange(v as "sets" | "grammar")}>
         <TabsList>
           <TabsTrigger value="sets">📚 フレーズ集</TabsTrigger>
           <TabsTrigger value="grammar">✏️ 文法練習</TabsTrigger>

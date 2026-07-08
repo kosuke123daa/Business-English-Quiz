@@ -31,6 +31,7 @@ function App() {
   const regularCustomSets = customSets.filter((s) => !s.id.startsWith("gp-"));
   const SETS = [...BUILTIN_SETS, ...regularCustomSets, ...gpSets];
   const [editGpSet, setEditGpSet] = useState<{ id: string; name: string; auto?: boolean } | null>(null);
+  const [setsTab, setSetsTab] = useState<"sets" | "grammar">("sets");
   const [setId, setSetId] = useState<string>(BUILTIN_SETS[0].id);
   const [groupNo, setGroupNo] = useState<number>(1);
   // null = 通常のグループ全問モード。非nullなら絞り込み対象のmark一覧
@@ -146,6 +147,8 @@ function App() {
           onCreateEmptySet={handleCreateEmptySet}
           onRenameSet={handleRenameSet}
           onDeleteSet={handleDeleteSet}
+          activeTab={setsTab}
+          onTabChange={setSetsTab}
           onCreateGrammarPractice={() => { setEditGpSet(null); setScreen("grammar-practice"); }}
           onRegenerateGrammarSet={(id, name) => { setEditGpSet({ id, name, auto: true }); setScreen("grammar-practice"); }}
         />
