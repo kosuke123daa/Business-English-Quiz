@@ -16,6 +16,7 @@ interface SetsScreenProps {
   onRenameSet: (setId: string, newName: string) => void;
   onDeleteSet: (setId: string) => void;
   onCreateGrammarPractice: () => void;
+  onRegenerateGrammarSet: (setId: string, setName: string) => void;
 }
 
 export function SetsScreen({
@@ -29,6 +30,7 @@ export function SetsScreen({
   onRenameSet,
   onDeleteSet,
   onCreateGrammarPractice,
+  onRegenerateGrammarSet,
 }: SetsScreenProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -152,7 +154,39 @@ export function SetsScreen({
             </p>
           )}
 
-          {gpSets.map(renderSetCard)}
+          {gpSets.map((set) => {
+            const marks = marksBySet[set.id] ?? {};
+            const total = set.data.length;
+            const done = Object.values(marks).filter((m) => m !== "skip").length;
+            const correct = Object.values(marks).filter((m) => m === "o").length;
+            const progress = total === 0 ? 0 : (done / total) * 100;
+            return (
+              <Card key={set.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onSelect(set.id)}>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle style={{ color: set.color }}>{set.name}</CardTitle>
+                  <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                    <Button variant="outline" size="sm" onClick={() => onRegenerateGrammarSet(set.id, set.name)}>
+                      🔄 再作成
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => {
+                      const name = window.prompt("新しい名前を入力してください", set.name);
+                      if (name && name.trim() !== "") onRenameSet(set.id, name.trim());
+                    }}>✏️</Button>
+                    <Button variant="ghost" size="icon" onClick={() => {
+                      if (window.confirm(`「${set.name}」を削除しますか？`)) onDeleteSet(set.id);
+                    }}>🗑️</Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>{done}/{total} 問対応済み</span>
+                    <span>✅ {correct}</span>
+                  </div>
+                  <Progress value={progress} />
+                </CardContent>
+              </Card>
+            );
+          })}
         </TabsContent>
       </Tabs>
     </div>

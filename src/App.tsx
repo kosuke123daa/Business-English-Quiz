@@ -30,6 +30,7 @@ function App() {
   const gpSets = customSets.filter((s) => s.id.startsWith("gp-"));
   const regularCustomSets = customSets.filter((s) => !s.id.startsWith("gp-"));
   const SETS = [...BUILTIN_SETS, ...regularCustomSets, ...gpSets];
+  const [editGpSet, setEditGpSet] = useState<{ id: string; name: string } | null>(null);
   const [setId, setSetId] = useState<string>(BUILTIN_SETS[0].id);
   const [groupNo, setGroupNo] = useState<number>(1);
   // null = 通常のグループ全問モード。非nullなら絞り込み対象のmark一覧
@@ -145,7 +146,8 @@ function App() {
           onCreateEmptySet={handleCreateEmptySet}
           onRenameSet={handleRenameSet}
           onDeleteSet={handleDeleteSet}
-          onCreateGrammarPractice={() => setScreen("grammar-practice")}
+          onCreateGrammarPractice={() => { setEditGpSet(null); setScreen("grammar-practice"); }}
+          onRegenerateGrammarSet={(id, name) => { setEditGpSet({ id, name }); setScreen("grammar-practice"); }}
         />
       )}
 
@@ -228,6 +230,8 @@ function App() {
 
       {screen === "grammar-practice" && (
         <GrammarPracticeScreen
+          editSetId={editGpSet?.id}
+          editSetName={editGpSet?.name}
           onSave={(name, phrases) => {
             const base = `gp-${name.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
             const existingIds = SETS.map((s) => s.id);
@@ -236,6 +240,10 @@ function App() {
             while (existingIds.includes(id)) { id = `${base}_${i}`; i++; }
             const newSet: PhraseSet = { id, name, color: pickColor(gpSets.length), data: phrases };
             addSet(newSet);
+          }}
+          onUpdate={(id, name, phrases) => {
+            renameSet(id, name);
+            updateData(id, phrases);
           }}
           onBack={() => setScreen("sets")}
         />

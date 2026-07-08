@@ -10,16 +10,21 @@ interface GeneratedPhrase {
 }
 
 interface GrammarPracticeScreenProps {
+  /** 再作成モード時に渡す既存セット情報 */
+  editSetId?: string;
+  editSetName?: string;
   onSave: (name: string, phrases: Phrase[]) => void;
+  onUpdate?: (id: string, name: string, phrases: Phrase[]) => void;
   onBack: () => void;
 }
 
-export function GrammarPracticeScreen({ onSave, onBack }: GrammarPracticeScreenProps) {
+export function GrammarPracticeScreen({ editSetId, editSetName, onSave, onUpdate, onBack }: GrammarPracticeScreenProps) {
+  const isEditMode = !!editSetId;
   const [description, setDescription] = useState("");
   const [generated, setGenerated] = useState<GeneratedPhrase[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [setName, setSetName] = useState("");
+  const [setName, setSetName] = useState(editSetName ?? "");
   const [saved, setSaved] = useState(false);
 
   async function handleGenerate() {
@@ -37,7 +42,7 @@ export function GrammarPracticeScreen({ onSave, onBack }: GrammarPracticeScreenP
       const data = await res.json();
       if (!res.ok || !data.phrases) throw new Error(data.error ?? "生成に失敗しました");
       setGenerated(data.phrases);
-      setSetName(description.trim().slice(0, 40));
+      if (!isEditMode) setSetName(description.trim().slice(0, 40));
     } catch (e) {
       setError(e instanceof Error ? e.message : "エラーが発生しました");
     } finally {
@@ -48,7 +53,11 @@ export function GrammarPracticeScreen({ onSave, onBack }: GrammarPracticeScreenP
   function handleSave() {
     if (generated.length === 0 || !setName.trim()) return;
     const phrases: Phrase[] = generated.map((p, i) => ({ id: i + 1, en: p.en, ja: p.ja }));
-    onSave(setName.trim(), phrases);
+    if (isEditMode && onUpdate) {
+      onUpdate(editSetId!, setName.trim(), phrases);
+    } else {
+      onSave(setName.trim(), phrases);
+    }
     setSaved(true);
   }
 
@@ -58,15 +67,23 @@ export function GrammarPracticeScreen({ onSave, onBack }: GrammarPracticeScreenP
         <Button variant="outline" size="sm" onClick={onBack}>
           ← 戻る
         </Button>
-        <h1 className="text-xl font-bold">文法練習問題を作る</h1>
+        <h1 className="text-xl font-bold">
+          {isEditMode ? "文法問題集を再作成" : "文法練習問題を作る"}
+        </h1>
       </div>
+
+      {isEditMode && (
+        <p className="text-sm text-gray-500">
+          「{editSetName}」の内容を新しく生成した問題で上書きします。
+        </p>
+      )}
 
       <p className="text-sm text-gray-600">
         練習したい文法・表現を入力すると、ビジネス英語の練習問題を10問生成します。
       </p>
 
       <Textarea
-        placeholder="例：助動詞 could / would を使った丁寧な依頼表現"
+        placeholder="例：助動詞 can / will を使った依頼・提案表現"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         rows={3}
@@ -103,12 +120,14 @@ export function GrammarPracticeScreen({ onSave, onBack }: GrammarPracticeScreenP
                 onChange={(e) => setSetName(e.target.value)}
               />
               <Button onClick={handleSave} disabled={!setName.trim()}>
-                💾 セットとして保存する
+                {isEditMode ? "🔄 上書き保存する" : "💾 セットとして保存する"}
               </Button>
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              <p className="text-sm text-green-600 font-medium">✅ 「{setName}」として保存しました。メイン画面から練習できます。</p>
+              <p className="text-sm text-green-600 font-medium">
+                ✅ 「{setName}」を{isEditMode ? "更新" : "保存"}しました。
+              </p>
               <Button variant="outline" onClick={handleGenerate} disabled={loading}>
                 🔄 同じテーマで再生成
               </Button>
