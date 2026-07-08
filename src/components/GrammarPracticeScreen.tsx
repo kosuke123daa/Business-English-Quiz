@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,12 +13,14 @@ interface GrammarPracticeScreenProps {
   /** 再作成モード時に渡す既存セット情報 */
   editSetId?: string;
   editSetName?: string;
+  /** trueのとき、editSetNameを説明文として即座に生成を開始する */
+  autoGenerate?: boolean;
   onSave: (name: string, phrases: Phrase[]) => void;
   onUpdate?: (id: string, name: string, phrases: Phrase[]) => void;
   onBack: () => void;
 }
 
-export function GrammarPracticeScreen({ editSetId, editSetName, onSave, onUpdate, onBack }: GrammarPracticeScreenProps) {
+export function GrammarPracticeScreen({ editSetId, editSetName, autoGenerate, onSave, onUpdate, onBack }: GrammarPracticeScreenProps) {
   const isEditMode = !!editSetId;
   const [description, setDescription] = useState("");
   const [generated, setGenerated] = useState<GeneratedPhrase[]>([]);
@@ -27,8 +29,13 @@ export function GrammarPracticeScreen({ editSetId, editSetName, onSave, onUpdate
   const [setName, setSetName] = useState(editSetName ?? "");
   const [saved, setSaved] = useState(false);
 
-  async function handleGenerate() {
-    if (!description.trim()) return;
+  useEffect(() => {
+    if (autoGenerate && editSetName) {
+      generateWith(editSetName);
+    }
+  }, []);
+
+  async function generateWith(text: string) {
     setLoading(true);
     setError(null);
     setGenerated([]);
@@ -37,17 +44,22 @@ export function GrammarPracticeScreen({ editSetId, editSetName, onSave, onUpdate
       const res = await fetch("/api/generate-practice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ grammarDescription: description.trim() }),
+        body: JSON.stringify({ grammarDescription: text }),
       });
       const data = await res.json();
       if (!res.ok || !data.phrases) throw new Error(data.error ?? "生成に失敗しました");
       setGenerated(data.phrases);
-      if (!isEditMode) setSetName(description.trim().slice(0, 40));
     } catch (e) {
       setError(e instanceof Error ? e.message : "エラーが発生しました");
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleGenerate() {
+    if (!description.trim()) return;
+    await generateWith(description.trim());
+    if (!isEditMode) setSetName(description.trim().slice(0, 40));
   }
 
   function handleSave() {
@@ -128,7 +140,7 @@ export function GrammarPracticeScreen({ editSetId, editSetName, onSave, onUpdate
               <p className="text-sm text-green-600 font-medium">
                 ✅ 「{setName}」を{isEditMode ? "更新" : "保存"}しました。
               </p>
-              <Button variant="outline" onClick={handleGenerate} disabled={loading}>
+              <Button variant="outline" onClick={() => generateWith(isEditMode ? (editSetName ?? description) : description)} disabled={loading}>
                 🔄 同じテーマで再生成
               </Button>
             </div>
